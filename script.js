@@ -6,22 +6,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let timeout; // Variable para el temporizador
 
-    // Función para actualizar el contador en pantalla
+    // Actualizacion del Contador
     function actualizarContador() {
         contadorElemento.textContent = contador;
         reiniciarTemporizador();
     }
 
-    // Función para reiniciar el temporizador de 5 minutos
+    // Contador de 5 minutos, creo que no jala
     function reiniciarTemporizador() {
         clearTimeout(timeout); // Reinicia el temporizador anterior
         timeout = setTimeout(() => {
             contador = 0;
             actualizarContador();
-        }, 300000); // 5 minutos = 300,000 ms
+        }, 300000); // Contador en milisegundos (5 minutos)
     }
 
-    // Eventos de los botones
+    // Botones
     btnSumar.addEventListener("click", () => {
         contador++;
         actualizarContador();
@@ -32,6 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarContador();
     });
 
-    // Iniciar el temporizador al cargar la página
+    // Inicializacion del temporizador
     reiniciarTemporizador();
 });
