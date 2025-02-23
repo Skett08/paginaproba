@@ -17,18 +17,91 @@ body {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-#boton {
-    background-color: #ffcc00;
-    color: #000;
+/* Estilo para el campo de entrada */
+#numeros {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+/* Estilo para el enfoque del campo de entrada */
+#numeros:focus {
+    border-color: #4CAF50;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    outline: none;
+}
+
+/* Estilo para los botones */
+button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #ffffff;
     font-size: 18px;
+    font-weight: bold;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto hover para los botones */
+button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: left 0.4s;
+}
+
+button:hover::before {
+    left: 100%;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0056b3, #003f80);
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(0, 123, 255, 0.6);
+}
+
+button:active {
+    transform: scale(0.95);
+    box-shadow: 0px 2px 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Estilo para el botón "Regresar" */
+#regresar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
     padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
-    transition: background 0.3s ease;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
-#boton:hover {
-    background-color: #ffaa00;
+#regresar:hover {
+    background-color: #45a049;
 }
+

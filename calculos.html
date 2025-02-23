@@ -1,0 +1,41 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculos de Datos - FIEX</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .resultados, .resultados-titulo {  /* Estilo para ocultar el texto "Resultados:" hasta que se presione una tecla*/ 
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Boton "Regresar"-->
+        <button id="regresar" onclick="window.location.href='index.html'">Regresar</button>
+        
+        <h1>Cálculos de Datos</h1>
+        <p>Introduce los datos separados por un espacio</p>
+        
+        <!-- Campo de entrada de datos -->
+        <input type="text" id="numeros" placeholder="Por Ejemplo: 6 3 1 9 4 2">
+        
+        <!-- Boton "Calcular" -->
+        <button id="calcular">Calcular</button>
+        
+        <!-- Palabra "Resultados:" y resultados -->
+        <div class="resultados-titulo">
+            <h3>Resultados:</h3>
+        </div>
+        <div class="resultados">
+            <p>Media: <span id="media"></span></p>
+            <p>Moda: <span id="moda"></span></p>
+            <p>Mediana: <span id="mediana"></span></p>
+            <p>Varianza: <span id="varianza"></span></p>
+            <p>Desviación Estándar: <span id="desviacion"></span></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
