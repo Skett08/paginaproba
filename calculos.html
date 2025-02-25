@@ -5,26 +5,22 @@
     <title>Cálculos de Datos - FIEX</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .resultados, .resultados-titulo {  /* Estilo para ocultar el texto "Resultados:" hasta que se presione una tecla*/ 
+        .resultados, .resultados-titulo {
             display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Boton "Regresar"-->
         <button id="regresar" onclick="window.location.href='index.html'">Regresar</button>
         
         <h1>Cálculos de Datos</h1>
         <p>Introduce los datos separados por un espacio</p>
         
-        <!-- Campo de entrada de datos -->
         <input type="text" id="numeros" placeholder="Por Ejemplo: 6 3 1 9 4 2">
         
-        <!-- Boton "Calcular" -->
         <button id="calcular">Calcular</button>
         
-        <!-- Palabra "Resultados:" y resultados -->
         <div class="resultados-titulo">
             <h3>Resultados:</h3>
         </div>
@@ -34,6 +30,11 @@
             <p>Mediana: <span id="mediana"></span></p>
             <p>Varianza: <span id="varianza"></span></p>
             <p>Desviación Estándar: <span id="desviacion"></span></p>
+            <p>Q1: <span id="q1"></span></p>
+            <p>Q2 (Mediana): <span id="q2"></span></p>
+            <p>Q3: <span id="q3"></span></p>
+            <p>Sesgo: <span id="sesgo"></span></p>  <!-- Sesgo -->
+            <p>Curtosis: <span id="curtosis"></span></p>  <!-- Curtosis -->
         </div>
     </div>
     <script src="script.js"></script>
