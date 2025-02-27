@@ -12,10 +12,11 @@
 <body>
     <div class="container">
         <button id="regresar" onclick="window.location.href='index.html'">Regresar</button>
-        <h1>Calculadora de Radiación Solar</h1>
-        <div id="map" style="height: 500px;"></div>
+        <h1>Estado de Radiación Solar</h1>
+        <p>Selecciona un punto en el mapa para obtener los datos de la radiación solar.</p>
+        <div id="map" style="height: 500px; width: 1000px;"></div>
         <div class="resultados" style="display: none;">
-            <h2 class="resultados-titulo">Resultados de Radiación</h2>
+            <h2 class="resultados-titulo">Datos de Radiación Solar</h2>
             <div id="datos-meteorologicos">
                 <p>Los datos de radiación solar se mostrarán aquí.</p>
             </div>
@@ -27,7 +28,7 @@
     <!-- Script personalizado -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Inicializar mapa
+            // Inicializa el mapa
             let map = L.map('map').setView([19.702187, -101.2034349], 10); // El mapa por defecto apunta a Morelia
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
@@ -52,7 +53,7 @@
             const startDate = '2023-01-01';
             const endDate = '2023-01-02';
             
-            // API de Open Meteo (historical)
+            // API de Open Meteo
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=shortwave_radiation,direct_radiation,diffuse_radiation&timezone=America/Mexico_City`;
 
             try {
@@ -86,18 +87,14 @@
             resultsTitle.style.display = 'block';
 
             resultsContent.innerHTML = `
-                <h3>Datos de Radiación Solar</h3>
                 <table>
                     <tr>
-                        <p>Fecha (UTC): ${new Date().toLocaleDateString()}</p>
+                        <p>Fecha: ${new Date().toLocaleDateString()}</p>
                         <p>Hora: ${new Date().toLocaleTimeString()}</p>
-                        <p>Radiación (W/m²): ${data.current.shortwave_radiation}</p>
+                        <p>Radiación Solar: ${data.current.shortwave_radiation} W/m²</p>
                         <p>Latitud: ${data.latitude}</p>
-                        <p>Latitud: ${data.longitude}</p>
+                        <p>Longitud: ${data.longitude}</p>
                     </tr>
-                    
-                        
-                    
                 </table>
             `;
         }
