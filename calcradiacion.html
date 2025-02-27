@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Radiación Solar</title>
+    <!-- Link a Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <!-- Link a styles.css -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Radiación Solar</h1>
+        <div id="map" style="height: 400px;"></div>
+        <div class="resultados" style="display: none;">
+            <h2 class="resultados-titulo">Resultados de Radiación</h2>
+            <div id="datos-meteorologicos">
+                <p>Los datos de radiación solar se mostrarán aquí.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Script personalizado -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Inicializar mapa
+            let map = L.map('map').setView([19.4326, -99.1332], 10); // Ciudada de México por defecto
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+            // Marcapasos para ubicaciones clickeadas
+            let marker = null;
+
+            map.on('click', function(e) {
+                // Elimina el marcador anterior
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+
+                // Agrega nuevo marcador en la ubicación clickeada
+                marker = L.marker(e.latlng).addTo(map);
+
+                // Obtener radiación
+                fetchRadiation(e.latlng.lat, e.latlng.lng);
+            });
+        });
+
+        async function fetchRadiation(lat, lon) {
+            const startDate = '2023-01-01';
+            const endDate = '2023-01-02';
+            
+            // API de Open Meteo (historical)
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=shortwave_radiation,direct_radiation,diffuse_radiation&timezone=America/Mexico_City`;
+
+            try {
+                const respuesta = await fetch(url);
+                const datos = await respuesta.json();
+                
+                if (datos && datos.current) {
+                 //   document.getElementById('fecha').textContent = `Última actualización: ${new Date().toLocaleString()}`;
+                 //   document.getElementById('ghi').textContent = `GHI: ${datos.current.shortwave_radiation} W/m²`;
+                 //   document.getElementById('dni').textContent = `DNI: ${datos.current.direct_radiation} W/m²`;
+                 //   document.getElementById('dhi').textContent = `DHI: ${datos.current.diffuse_radiation} W/m²`;
+
+                   // datosRadiacion = {
+                   //     ghi: datos.current.shortwave_radiation,
+                   //     dni: datos.current.direct_radiation,
+                   //     dhi: datos.current.diffuse_radiation
+                   // };
+                   displayRadiation(datos);
+                }
+            } catch (error) {
+                console.error('Error al obtener los datos:', error);
+            }
+        }
+
+        function displayRadiation(data) {
+            const resultsDiv = document.querySelector('.resultados');
+            const resultsContent = document.getElementById('datos-meteorologicos');
+            const resultsTitle = document.querySelector('.resultados-titulo');
+
+            resultsDiv.style.display = 'block';
+            resultsTitle.style.display = 'block';
+
+            resultsContent.innerHTML = `
+                <h3>Datos de Radiación Solar</h3>
+                <table>
+                    <tr>
+                        <p>Fecha (UTC): ${new Date().toLocaleDateString()}</p>
+                        <p>Hora: ${new Date().toLocaleTimeString()}</p>
+                        <p>Radiación (W/m²): ${data.current.shortwave_radiation}</p>
+                        <p>Latitud: ${data.latitude}</p>
+                        <p>Latitud: ${data.longitude}</p>
+                    </tr>
+                    
+                        
+                    
+                </table>
+            `;
+        }
+    </script>
+</body>
+</html>

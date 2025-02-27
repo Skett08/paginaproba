@@ -1,12 +1,20 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cálculos de Datos - FIEX</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-boxplot"></script>
+
     <style>
         .resultados, .resultados-titulo {
             display: none;
+        }
+        canvas {
+            max-width: 600px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -20,7 +28,15 @@
         <input type="text" id="numeros" placeholder="Por Ejemplo: 6 3 1 9 4 2">
         
         <button id="calcular">Calcular</button>
-        
+
+        <label for="tipoGrafica">Seleccionar tipo de gráfica:</label>
+        <select id="tipoGrafica">
+            <option value="histograma">Histograma</option>
+            <option value="caja y bigote">Caja y Bigote</option>
+            <option value="xy">XY</option>
+            <option value="tendencia">Tendencia</option>
+        </select>
+
         <div class="resultados-titulo">
             <h3>Resultados:</h3>
         </div>
@@ -33,9 +49,11 @@
             <p>Q1: <span id="q1"></span></p>
             <p>Q2 (Mediana): <span id="q2"></span></p>
             <p>Q3: <span id="q3"></span></p>
-            <p>Sesgo: <span id="sesgo"></span></p>  <!-- Sesgo -->
-            <p>Curtosis: <span id="curtosis"></span></p>  <!-- Curtosis -->
+            <p>Sesgo: <span id="sesgo"></span></p>
+            <p>Curtosis: <span id="curtosis"></span></p>
         </div>
+        
+        <canvas id="grafico"></canvas>
     </div>
     <script src="script.js"></script>
 </body>

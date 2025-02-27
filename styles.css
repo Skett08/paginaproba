@@ -86,7 +86,7 @@ button:active {
     box-shadow: 0px 2px 5px rgba(0, 123, 255, 0.3);
 }
 
-/* Estilo para el botón "Regresar" */
+/* Estilo para el boton "Regresar" */
 #regresar {
     position: absolute;
     top: 20px;
@@ -105,3 +105,32 @@ button:active {
     background-color: #45a049;
 }
 
+/* Estilo para el selector de tipo de gráfica */
+#tipoGrafica {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+/* Estilo para el enfoque del selector */
+#tipoGrafica:focus {
+    border-color: #4CAF50;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    outline: none;
+}
+
+/* Estilo para las opciones del selector */
+#tipoGrafica option {
+    background-color: #fff;
+    color: #333;
+    font-size: 16px;
+}
