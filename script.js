@@ -4,10 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultados = document.querySelector(".resultados");
     const resultadosTitulo = document.querySelector(".resultados-titulo");
     const tipoGraficaSelect = document.getElementById("tipoGrafica");
-    let chartInstance = null;
 
     function calcularResultados() {
-        const numeros = inputNumeros.value.split(" ").map(num => parseFloat(num.trim())).filter(num => !isNaN(num));
+        const numeros = inputNumeros.value.split(" ")
+            .map(num => parseFloat(num.trim()))
+            .filter(num => !isNaN(num));
 
         if (numeros.length === 0) {
             alert("¡Solamente se admiten números!");
@@ -42,27 +43,18 @@ document.addEventListener("DOMContentLoaded", () => {
         resultadosTitulo.style.display = "block";
 
         const tipoGrafica = tipoGraficaSelect.value;
-        const ctx = document.getElementById("grafico").getContext("2d");
 
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
-
-        switch (tipoGrafica) {
-            case "histograma":
-                chartInstance = generarHistograma(ctx, numeros);
-                break;
-            case "caja y bigote":
-                chartInstance = generarBoxPlot(ctx, numeros);
-                break;
-            case "xy":
-                chartInstance = generarXY(ctx, numeros);
-                break;
-            case "tendencia":
-                chartInstance = generarTendencia(ctx, numeros);
-                break;
-            default:
-                alert("Opción no válida. Inténtalo de nuevo.");
+        // Seleccionar la función de Plotly según la opción elegida
+        if (tipoGrafica === "caja y bigote") {
+            generarBoxPlotPlotly(numeros);
+        } else if (tipoGrafica === "histograma") {
+            generarHistogramaPlotly(numeros);
+        } else if (tipoGrafica === "xy") {
+            generarXYPlotly(numeros);
+        } else if (tipoGrafica === "tendencia") {
+            generarTendenciaPlotly(numeros);
+        } else {
+            alert("Opción no válida. Inténtalo de nuevo.");
         }
     }
 
@@ -77,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// Funciones de cálculo estadístico (se mantienen igual)
 function calcularMediana(arr) {
     const mitad = Math.floor(arr.length / 2);
     return arr.length % 2 === 0 ? (arr[mitad - 1] + arr[mitad]) / 2 : arr[mitad];
@@ -107,76 +100,105 @@ function calcularCuartil(arr, percentil) {
 
 function calcularSesgo(arr, media, desviacion) {
     const n = arr.length;
-    const sesgo = arr.reduce((sum, num) => sum + Math.pow((num - media) / desviacion, 3), 0) * (n / ((n - 1) * (n - 2)));
+    const sesgo = arr.reduce((sum, num) => sum + Math.pow((num - media) / desviacion, 3), 0) *
+        (n / ((n - 1) * (n - 2)));
     return sesgo;
 }
 
 function calcularCurtosis(arr, media, desviacion) {
     const n = arr.length;
-    const curtosis = arr.reduce((sum, num) => sum + Math.pow((num - media) / desviacion, 4), 0) * (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) - (3 * Math.pow(n - 1, 2)) / ((n - 2) * (n - 3));
+    const curtosis = arr.reduce((sum, num) => sum + Math.pow((num - media) / desviacion, 4), 0) *
+        (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) -
+        (3 * Math.pow(n - 1, 2)) / ((n - 2) * (n - 3));
     return curtosis;
 }
 
-function generarHistograma(ctx, datos) {
-    return new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: [...new Set(datos)].sort((a, b) => a - b),
-            datasets: [{
-                label: "Frecuencia",
-                data: [...new Set(datos)].map(val => datos.filter(num => num === val).length),
-                backgroundColor: "rgba(75, 192, 192, 0.6)"
-            }]
-        }
-    });
+// Gráfica de Caja y Bigote con Plotly
+function generarBoxPlotPlotly(datos) {
+    var trace = {
+        y: datos,
+        type: 'box',
+        name: 'Datos',
+        marker: { color: 'rgba(255,99,132,0.6)' }
+    };
+
+    var layout = {
+        title: 'Gráfica de Caja y Bigote',
+        autosize: true,
+        width: 600,
+        height: 400,
+        margin: { l: 50, r: 50, b: 50, t: 50 }
+    };
+
+    Plotly.newPlot('grafico', [trace], layout);
 }
 
-function generarBoxPlot(ctx, datos) {
-    datos.sort((a, b) => a - b);
-    return new Chart(ctx, {
-        type: "boxplot",
-        data: {
-            labels: ["Datos"],
-            datasets: [{
-                label: "Caja y Bigote",
-                data: [{
-                    min: Math.min(...datos),
-                    q1: calcularCuartil(datos, 0.25),
-                    median: calcularMediana(datos),
-                    q3: calcularCuartil(datos, 0.75),
-                    max: Math.max(...datos)
-                }],
-                backgroundColor: "rgba(255, 99, 132, 0.6)"
-            }]
-        }
-    });
+// Gráfica de Histograma con Plotly
+function generarHistogramaPlotly(datos) {
+    var trace = {
+        x: datos,
+        type: 'histogram',
+        marker: { color: 'rgba(75,192,192,0.6)' }
+    };
+
+    var layout = {
+        title: 'Histograma',
+        autosize: true,
+        width: 600,
+        height: 400,
+        margin: { l: 50, r: 50, b: 50, t: 50 }
+    };
+
+    Plotly.newPlot('grafico', [trace], layout);
 }
 
-function generarXY(ctx, datos) {
-    return new Chart(ctx, {
-        type: "scatter",
-        data: {
-            datasets: [{
-                label: "Puntos XY",
-                data: datos.map((num, index) => ({ x: index + 1, y: num })),
-                backgroundColor: "rgba(54, 162, 235, 0.6)"
-            }]
-        }
-    });
+// Gráfica XY (Scatter) con Plotly
+function generarXYPlotly(datos) {
+    const indices = datos.map((_, index) => index + 1);
+    var trace = {
+        x: indices,
+        y: datos,
+        mode: 'markers',
+        type: 'scatter',
+        marker: { color: 'rgba(54,162,235,0.6)', size: 8 },
+        name: 'Datos'
+    };
+
+    var layout = {
+        title: 'Gráfico XY',
+        xaxis: { title: 'Índice' },
+        yaxis: { title: 'Valor' },
+        autosize: true,
+        width: 600,
+        height: 400,
+        margin: { l: 50, r: 50, b: 50, t: 50 }
+    };
+
+    Plotly.newPlot('grafico', [trace], layout);
 }
 
-function generarTendencia(ctx, datos) {
-    return new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: datos.map((_, index) => index + 1),
-            datasets: [{
-                label: "Tendencia",
-                data: datos,
-                borderColor: "rgba(255, 206, 86, 1)",
-                backgroundColor: "rgba(255, 206, 86, 0.2)",
-                fill: true
-            }]
-        }
-    });
+// Gráfica de Tendencia (Línea) con Plotly
+function generarTendenciaPlotly(datos) {
+    const indices = datos.map((_, index) => index + 1);
+    var trace = {
+        x: indices,
+        y: datos,
+        mode: 'lines+markers',
+        type: 'scatter',
+        line: { color: 'rgba(255,206,86,1)' },
+        marker: { color: 'rgba(255,206,86,0.6)', size: 8 },
+        name: 'Tendencia'
+    };
+
+    var layout = {
+        title: 'Tendencia',
+        xaxis: { title: 'Índice' },
+        yaxis: { title: 'Valor' },
+        autosize: true,
+        width: 600,
+        height: 400,
+        margin: { l: 50, r: 50, b: 50, t: 50 }
+    };
+
+    Plotly.newPlot('grafico', [trace], layout);
 }

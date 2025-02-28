@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cálculos de Datos - FIEX</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-boxplot"></script>
-
+    <!-- Incluir Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         .resultados, .resultados-titulo {
             display: none;
         }
-        canvas {
+        /* Contenedor para el gráfico */
+        #grafico {
             max-width: 600px;
             margin-top: 20px;
         }
@@ -29,7 +29,8 @@
         
         <button id="calcular">Calcular</button><br>
 
-        <br> <label for="tipoGrafica">Selecciona el tipo de gráfica:</label>
+        <br>
+        <label for="tipoGrafica">Selecciona el tipo de gráfica:</label>
         <select id="tipoGrafica">
             <option value="histograma">Histograma</option>
             <option value="caja y bigote">Caja y Bigote</option>
@@ -53,7 +54,8 @@
             <p>Curtosis: <span id="curtosis"></span></p>
         </div>
         
-        <canvas id="grafico"></canvas>
+        <!-- Contenedor para Plotly -->
+        <div id="grafico"></div>
     </div>
     <script src="script.js"></script>
 </body>
