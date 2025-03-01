@@ -1,58 +1,125 @@
 document.addEventListener("DOMContentLoaded", () => {
     const calcularBtn = document.getElementById("calcular");
     const inputNumeros = document.getElementById("numeros");
+    const excelInput = document.getElementById("excelFile");
     const resultados = document.querySelector(".resultados");
     const resultadosTitulo = document.querySelector(".resultados-titulo");
     const tipoGraficaSelect = document.getElementById("tipoGrafica");
 
-    function calcularResultados() {
-        const numeros = inputNumeros.value.split(" ")
-            .map(num => parseFloat(num.trim()))
-            .filter(num => !isNaN(num));
+    function actualizarResultadosTextuales(datasets) {
+        // Mostrar contenedores principales
+        resultados.classList.add('resultados-activos');
+        resultadosTitulo.classList.add('activo');
+    
+        // Resetear todos los elementos primero
+        document.querySelectorAll('.dataset-results').forEach(el => {
+            el.style.display = 'none'; // Ocultar contenedores
+            el.querySelectorAll('span').forEach(span => {
+                span.textContent = ''; // Limpiar valores anteriores
+            });
+        });
+    
+        // Actualizar datasets visibles
+        datasets.slice(0, 2).forEach((data, index) => { // Solo primeros 2 datasets
+            const datasetElement = document.getElementById(`dataset${index}`);
+            if (!datasetElement || data.length === 0) return;
+    
+            // Calcular métricas
+            const datos = data.slice().sort((a, b) => a - b);
+            const media = datos.reduce((a, b) => a + b, 0) / datos.length;
+            const mediana = calcularMediana(datos);
+            const moda = calcularModa(datos);
+            const varianza = calcularVarianza(datos, media);
+            const desviacion = Math.sqrt(varianza);
+            const q1 = calcularCuartil(datos, 0.25);
+            const q3 = calcularCuartil(datos, 0.75);
+            const sesgo = calcularSesgo(datos, media, desviacion);
+            const curtosis = calcularCurtosis(datos, media, desviacion);
+    
+            // Actualizar DOM
+            document.getElementById(`media${index}`).textContent = media.toFixed(2);
+            document.getElementById(`moda${index}`).textContent = moda;
+            document.getElementById(`mediana${index}`).textContent = mediana.toFixed(2);
+            document.getElementById(`varianza${index}`).textContent = varianza.toFixed(2);
+            document.getElementById(`desviacion${index}`).textContent = desviacion.toFixed(2);
+            document.getElementById(`q1${index}`).textContent = q1.toFixed(2);
+            document.getElementById(`q2${index}`).textContent = mediana.toFixed(2);
+            document.getElementById(`q3${index}`).textContent = q3.toFixed(2);
+            document.getElementById(`sesgo${index}`).textContent = sesgo.toFixed(2);
+            document.getElementById(`curtosis${index}`).textContent = curtosis.toFixed(2);
+    
+            // Estilos para disposición en fila
+            datasetElement.style.display = 'flex';
+            datasetElement.style.flexDirection = 'column';
+            datasetElement.style.flex = '1 1 45%';
+            datasetElement.style.minWidth = '300px';
+            datasetElement.style.margin = '10px';
+            datasetElement.style.padding = '15px';
+            datasetElement.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+            datasetElement.style.borderRadius = '8px';
+        });
+    }
 
-        if (numeros.length === 0) {
-            alert("¡Solamente se admiten números!");
+    function calcularResultados() {
+        // Procesar archivos Excel
+        if (excelInput.files.length > 0) {
+            const files = excelInput.files;
+            const datasets = [];
+            let filesProcessed = 0;
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = e.target.result;
+                    const workbook = XLSX.read(data, { type: 'binary' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    const values = sheetData.flat().filter(v => v !== null && v !== undefined && v !== "");
+                    const nums = values.map(v => parseFloat(v)).filter(v => !isNaN(v));
+                    
+                    datasets.push(nums);
+                    filesProcessed++;
+                    
+                    if (filesProcessed === files.length) {
+                        generarGrafica(datasets);
+                        actualizarResultadosTextuales(datasets.slice(0, 2));
+                    }
+                };
+                reader.readAsBinaryString(file);
+            }
             return;
         }
 
-        numeros.sort((a, b) => a - b);
+        // Procesar texto si no hay archivos Excel
+        const lineas = inputNumeros.value.split("\n").filter(line => line.trim() !== "");
+        const datasets = lineas.map(line => 
+            line.split(/\s+/)
+                .map(num => parseFloat(num.trim()))
+                .filter(num => !isNaN(num))
+        ).filter(data => data.length > 0);
 
-        const media = numeros.reduce((a, b) => a + b, 0) / numeros.length;
-        const mediana = calcularMediana(numeros);
-        const moda = calcularModa(numeros);
-        const varianza = calcularVarianza(numeros, media);
-        const desviacion = Math.sqrt(varianza);
-        const q1 = calcularCuartil(numeros, 0.25);
-        const q2 = mediana;
-        const q3 = calcularCuartil(numeros, 0.75);
-        const sesgo = calcularSesgo(numeros, media, desviacion);
-        const curtosis = calcularCurtosis(numeros, media, desviacion);
+        if (datasets.length === 0) {
+            alert("¡Por favor, ingresa al menos un conjunto de datos!");
+            return;
+        }
 
-        document.getElementById("media").textContent = media.toFixed(2);
-        document.getElementById("moda").textContent = moda;
-        document.getElementById("mediana").textContent = mediana;
-        document.getElementById("varianza").textContent = varianza.toFixed(2);
-        document.getElementById("desviacion").textContent = desviacion.toFixed(2);
-        document.getElementById("q1").textContent = q1.toFixed(2);
-        document.getElementById("q2").textContent = q2.toFixed(2);
-        document.getElementById("q3").textContent = q3.toFixed(2);
-        document.getElementById("sesgo").textContent = sesgo.toFixed(2);
-        document.getElementById("curtosis").textContent = curtosis.toFixed(2);
+        // Mostrar siempre los resultados textuales (USANDO NUEVA LÓGICA)
+        actualizarResultadosTextuales(datasets.slice(0, 2));
+        generarGrafica(datasets);
+    }
 
-        resultados.style.display = "block";
-        resultadosTitulo.style.display = "block";
-
+    function generarGrafica(datasets) {
         const tipoGrafica = tipoGraficaSelect.value;
-
-        // Seleccionar la función de Plotly según la opción elegida
         if (tipoGrafica === "caja y bigote") {
-            generarBoxPlotPlotly(numeros);
+            generarBoxPlotPlotly(datasets);
         } else if (tipoGrafica === "histograma") {
-            generarHistogramaPlotly(numeros);
+            generarHistogramaPlotly(datasets);
         } else if (tipoGrafica === "xy") {
-            generarXYPlotly(numeros);
+            generarXYPlotly(datasets);
         } else if (tipoGrafica === "tendencia") {
-            generarTendenciaPlotly(numeros);
+            generarTendenciaPlotly(datasets);
         } else {
             alert("Opción no válida. Inténtalo de nuevo.");
         }
@@ -63,13 +130,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     inputNumeros.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
             calcularResultados();
         }
     });
 });
 
-// Funciones de cálculo estadístico (se mantienen igual)
+// Funciones estadísticas
+
 function calcularMediana(arr) {
     const mitad = Math.floor(arr.length / 2);
     return arr.length % 2 === 0 ? (arr[mitad - 1] + arr[mitad]) / 2 : arr[mitad];
@@ -113,59 +182,77 @@ function calcularCurtosis(arr, media, desviacion) {
     return curtosis;
 }
 
-// Gráfica de Caja y Bigote con Plotly
-function generarBoxPlotPlotly(datos) {
-    var trace = {
-        y: datos,
+// Función auxiliar para obtener colores cíclicos
+function getColor(index) {
+    const colors = [
+        'rgba(255,99,132,0.6)',
+        'rgba(54,162,235,0.6)',
+        'rgba(255,206,86,0.6)',
+        'rgba(75,192,192,0.6)',
+        'rgba(153,102,255,0.6)',
+        'rgba(255,159,64,0.6)'
+    ];
+    return colors[index % colors.length];
+}
+
+// Gráfica de Caja y Bigote Comparativa usando Plotly
+function generarBoxPlotPlotly(datasets) {
+    const traces = datasets.map((data, index) => ({
+        y: data,
         type: 'box',
-        name: 'Datos',
-        marker: { color: 'rgba(255,99,132,0.6)' }
-    };
+        name: `Datos ${index + 1}`,
+        marker: { color: getColor(index) }
+    }));
 
     var layout = {
-        title: 'Gráfica de Caja y Bigote',
+        title: 'Gráfica de Caja y Bigote Comparativa',
         autosize: true,
         width: 600,
         height: 400,
         margin: { l: 50, r: 50, b: 50, t: 50 }
     };
 
-    Plotly.newPlot('grafico', [trace], layout);
+    Plotly.newPlot('grafico', traces, layout);
 }
 
-// Gráfica de Histograma con Plotly
-function generarHistogramaPlotly(datos) {
-    var trace = {
-        x: datos,
+// Histograma Comparativo usando Plotly
+function generarHistogramaPlotly(datasets) {
+    const traces = datasets.map((data, index) => ({
+        x: data,
         type: 'histogram',
-        marker: { color: 'rgba(75,192,192,0.6)' }
-    };
+        name: `Datos ${index + 1}`,
+        opacity: 0.7,
+        marker: { color: getColor(index) }
+    }));
 
     var layout = {
-        title: 'Histograma',
+        title: 'Histograma Comparativo',
         autosize: true,
         width: 600,
         height: 400,
+        barmode: 'overlay',
         margin: { l: 50, r: 50, b: 50, t: 50 }
     };
 
-    Plotly.newPlot('grafico', [trace], layout);
+    Plotly.newPlot('grafico', traces, layout);
 }
 
-// Gráfica XY (Scatter) con Plotly
-function generarXYPlotly(datos) {
-    const indices = datos.map((_, index) => index + 1);
-    var trace = {
-        x: indices,
-        y: datos,
-        mode: 'markers',
-        type: 'scatter',
-        marker: { color: 'rgba(54,162,235,0.6)', size: 8 },
-        name: 'Datos'
-    };
+// Gráfico XY (Scatter) Comparativo usando Plotly
+function generarXYPlotly(datasets) {
+    const traces = datasets.map((data, index) => {
+        const indices = data.map((_, i) => i + 1);
+        return {
+            x: indices,
+            y: data,
+            mode: 'markers',
+            type: 'scatter',
+            name: `Datos ${index + 1}`,
+            marker: { color: getColor(index), size: 8 }
+        };
+    });
 
     var layout = {
-        title: 'Gráfico XY',
+        title: 'Gráfico XY Comparativo',
         xaxis: { title: 'Índice' },
         yaxis: { title: 'Valor' },
         autosize: true,
@@ -174,24 +261,26 @@ function generarXYPlotly(datos) {
         margin: { l: 50, r: 50, b: 50, t: 50 }
     };
 
-    Plotly.newPlot('grafico', [trace], layout);
+    Plotly.newPlot('grafico', traces, layout);
 }
 
-// Gráfica de Tendencia (Línea) con Plotly
-function generarTendenciaPlotly(datos) {
-    const indices = datos.map((_, index) => index + 1);
-    var trace = {
-        x: indices,
-        y: datos,
-        mode: 'lines+markers',
-        type: 'scatter',
-        line: { color: 'rgba(255,206,86,1)' },
-        marker: { color: 'rgba(255,206,86,0.6)', size: 8 },
-        name: 'Tendencia'
-    };
+// Gráfico de Tendencia (Línea) Comparativo usando Plotly
+function generarTendenciaPlotly(datasets) {
+    const traces = datasets.map((data, index) => {
+        const indices = data.map((_, i) => i + 1);
+        return {
+            x: indices,
+            y: data,
+            mode: 'lines+markers',
+            type: 'scatter',
+            name: `Datos ${index + 1}`,
+            line: { color: getColor(index) },
+            marker: { color: getColor(index), size: 8 }
+        };
+    });
 
     var layout = {
-        title: 'Tendencia',
+        title: 'Gráfico de Tendencia Comparativo',
         xaxis: { title: 'Índice' },
         yaxis: { title: 'Valor' },
         autosize: true,
@@ -200,5 +289,5 @@ function generarTendenciaPlotly(datos) {
         margin: { l: 50, r: 50, b: 50, t: 50 }
     };
 
-    Plotly.newPlot('grafico', [trace], layout);
+    Plotly.newPlot('grafico', traces, layout);
 }

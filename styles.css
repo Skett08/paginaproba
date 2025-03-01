@@ -4,9 +4,11 @@ body {
     color: #ffffff;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    min-height: 100vh;
     margin: 0;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 .container {
@@ -15,6 +17,8 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 800px;
 }
 
 /* Estilo para el campo de entrada */
@@ -22,17 +26,16 @@ body {
     width: 100%;
     max-width: 400px;
     padding: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin: 20px auto;
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
     background-color: #f9f9f9;
     color: #333;
     transition: all 0.3s ease;
+    display: block;
 }
 
-/* Estilo para el enfoque del campo de entrada */
 #numeros:focus {
     border-color: #4CAF50;
     background-color: #fff;
@@ -59,7 +62,6 @@ button {
     overflow: hidden;
 }
 
-/* Efecto hover para los botones */
 button::before {
     content: "";
     position: absolute;
@@ -86,7 +88,7 @@ button:active {
     box-shadow: 0px 2px 5px rgba(0, 123, 255, 0.3);
 }
 
-/* Estilo para el boton "Regresar" */
+/* Estilo para el botón "Regresar" */
 #regresar {
     position: absolute;
     top: 20px;
@@ -110,17 +112,16 @@ button:active {
     width: 100%;
     max-width: 400px;
     padding: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin: 20px auto;
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
     background-color: #f9f9f9;
     color: #333;
     transition: all 0.3s ease;
+    display: block;
 }
 
-/* Estilo para el enfoque del selector */
 #tipoGrafica:focus {
     border-color: #4CAF50;
     background-color: #fff;
@@ -128,9 +129,57 @@ button:active {
     outline: none;
 }
 
-/* Estilo para las opciones del selector */
 #tipoGrafica option {
     background-color: #fff;
     color: #333;
     font-size: 16px;
+}
+
+/* Estilo para centrar los contenedores de resultados */
+.resultados {
+    display: none;
+}
+
+.resultados.resultados-activos {
+    display: flex;
+}
+
+.resultados-titulo {
+    display: none;
+}
+
+.resultados-titulo.activo {
+    display: block;
+}
+
+.dataset-results {
+    flex: 1;
+    min-width: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Para móviles */
+@media (max-width: 768px) {
+    .resultados {
+        flex-direction: column;
+    }
+    
+    .dataset-results {
+        min-width: unset;
+        width: 100%;
+    }
+}
+
+.dataset-results h4 {
+    color: #e303e7;
+    margin-bottom: 10px;
+}
+
+/* Contenedor para el gráfico centrado */
+#grafico {
+    max-width: 600px;
+    margin: 20px auto;
 }
