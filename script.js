@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ).filter(data => data.length > 0);
 
         if (datasets.length === 0) {
-            alert("¡Por favor, ingresa al menos un conjunto de datos!");
+            alert("Ingresa al menos un conjunto de datos o sube un archivo de Excel.");
             return;
         }
 
@@ -291,3 +291,80 @@ function generarTendenciaPlotly(datasets) {
 
     Plotly.newPlot('grafico', traces, layout);
 }
+
+// Configurar el modal de ayuda
+const ayudaModal = document.getElementById('ayudaModal');
+const btnAyuda = document.getElementById('btnAyuda');
+const cerrarAyuda = document.getElementById('cerrarAyuda');
+
+// Datos de las fórmulas
+const formulas = [
+    {
+        nombre: "Media",
+        descripcion: "Promedio de todos los valores. Suma de todos los elementos dividida entre la cantidad de elementos.",
+        formula: "μ = (Σxᵢ) / N"
+    },
+    {
+        nombre: "Moda",
+        descripcion: "Valores que aparecen con más frecuencia en el conjunto de datos.",
+        formula: "Moda = valores con mayor frecuencia"
+    },
+    {
+        nombre: "Mediana",
+        descripcion: "Valor central cuando los datos están ordenados. Si hay un número par de elementos, es el promedio de los dos valores centrales.",
+        formula: "Mediana = valor central ordenado"
+    },
+    {
+        nombre: "Varianza",
+        descripcion: "Medida de dispersión que representa la variabilidad promedio al cuadrado respecto a la media.",
+        formula: "σ² = Σ(xᵢ - μ)² / N"
+    },
+    {
+        nombre: "Desviación Estándar",
+        descripcion: "Raíz cuadrada de la varianza. Indica la dispersión de los datos en las mismas unidades que los datos originales.",
+        formula: "σ = √σ²"
+    },
+    {
+        nombre: "Cuartiles",
+        descripcion: "Valores que dividen los datos ordenados en cuatro partes iguales. Q1: 25%, Q2: 50% (mediana), Q3: 75%.",
+        formula: "Qᵢ = valor en la posición i*(N+1)/4"
+    },
+    {
+        nombre: "Sesgo",
+        descripcion: "Medida de asimetría de la distribución. Sesgo positivo indica cola a la derecha, negativo cola a la izquierda.",
+        formula: "Sesgo = [n/((n-1)(n-2))] * Σ[(xᵢ - μ)/σ]³"
+    },
+    {
+        nombre: "Curtosis",
+        descripcion: "Medida del \"pico\" de la distribución. Indica cuánta concentración existe alrededor de la media.",
+        formula: "Curtosis = [n(n+1)/((n-1)(n-2)(n-3))] * Σ[(xᵢ - μ)/σ]⁴ - [3(n-1)²/((n-2)(n-3))]"
+    }
+];
+
+// Generar contenido del modal
+function generarContenidoAyuda() {
+    const lista = document.getElementById('listaFormulas');
+    lista.innerHTML = formulas.map((item, index) => `
+        <div class="formula-item">
+            <h3>${index + 1}. ${item.nombre}</h3>
+            <div class="formula">${item.formula}</div>
+            <div class="descripcion">${item.descripcion}</div>
+        </div>
+    `).join('');
+}
+
+// Manejar eventos
+btnAyuda.addEventListener('click', () => {
+    ayudaModal.style.display = "flex";
+    generarContenidoAyuda();
+});
+
+cerrarAyuda.addEventListener('click', () => {
+    ayudaModal.style.display = "none";
+});
+
+window.addEventListener('click', (event) => {
+    if (event.target === ayudaModal) {
+        ayudaModal.style.display = "none";
+    }
+});

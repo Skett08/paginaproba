@@ -13,6 +13,7 @@
 <body>
   <div class="container">
     <button id="regresar" onclick="window.location.href='index.html'">Regresar</button>
+    <button id="btnAyuda">Mostrar Fórmulas</button>
     
     <h1>Cálculos de Datos</h1>
     <p>Introduce cada conjunto de datos en una línea (números separados por espacio)</p>
@@ -69,6 +70,14 @@
       </div>
     </div>
     
+    <div id="ayudaModal">
+      <div id="contenidoAyuda">
+          <span id="cerrarAyuda">&times;</span>
+          <h2>Ayuda Estadística</h2>
+          <div id="listaFormulas"></div>
+      </div>
+  </div>
+
     <!-- Contenedor para Plotly -->
     <div id="grafico"></div>
   </div>
