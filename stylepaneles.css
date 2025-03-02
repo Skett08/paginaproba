@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+* {
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+       font-family:"Poppins";
+}
+
+body{
+        height: 200vh;
+        position: relative;
+        background-color: #edecf2;
+}
+.header{
+        min-height: 100vh;
+        background-image:linear-gradient(#14d3d675,#00bfff87), url("https://images.unsplash.com/photo-1594818379496-da1e345b0ded?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        background-size: cover;
+        position: relative;
+        background-attachment: fixed;
+        text-align: center;
+}
+
+.limit{
+        width: 90%;
+        max-width: 1200px;
+        margin: 0px auto;
+}
+.wave{
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+}
+
+.header__section{
+        height: calc(100vh - 150px);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+}
+
+.title{
+        font-size: 4.5rem;
+        letter-spacing: 5px;
+        text-shadow: 3px 3px 2px #00000085;
+        font-family:"Raleway",sans-serif;
+        text-align: center;
+        text-transform: uppercase;
+}
+
+.header__paragraph{
+        font-size: 2rem;
+        text-shadow: 3px 3px 2px #00000085;
+        font-family: "Poppins",sans-serif;
+        font-style: italic;
+
+}
+.regresar{
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #1e74ff;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        transition: .3s;
+}
+
+
+.subtitle{
+        font-size: 2rem;
+        text-align: center;
+        margin: 40px 0;
+        color: #0caea0;
+
+}
+.regresar:hover{
+        background-color: rgb(20, 220, 180);
+}
+
+/*-----------------About------------*/
+
+.about__items{
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(400px,1fr));
+        gap:15px;
+        margin-top: 20px;
+        justify-content: center;
+        align-items: center;
+  
+}
+
+.about__text{
+        font-size: 20px;
+}
+
+
+.about__img{
+        width: 100%;
+        box-shadow: 10px 10px 5px rgb(109, 107, 107);
+        object-fit: cover;
+        border-radius: 10px;
+}
+
+/*Como funciona*/
+
+
+
+.funcionamiento__img{
+        width: 100%;
+}
+
+.funcionamiento__items{
+        list-style: none;
+        margin-bottom: 10px;
+}
+
+li::before {
+        content: "1";  /* El marcador que se usará */
+        color: white;  /* Cambiar el color de la viñeta */
+        font-size: 24px;  /* Tamaño de la viñeta */
+        margin-right: 10px;  /* Espaciado entre el marcador y el texto */
+        vertical-align: middle;  /* Alineación vertical */
+        background-color: #4169e0;
+        width: 35px;
+        height: 35px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        
+    }
+
+li:nth-of-type(2)::before{
+        content: "2";
+}
+li:nth-of-type(3)::before{
+        content: "3";
+}
+li:nth-of-type(4)::before{
+        content: "4";
+}
+
+/*---------------BENEFICOS----------*/
+
+.beneficios{
+        background-image: linear-gradient(#1fcf7c67,rgba(0, 0, 255, 0.519)), url("https://images.unsplash.com/photo-1613665813446-82a78c468a1d?q=80&w=2058&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        background-size: cover;
+        padding-top: 20px;
+        margin-top: 50px;
+}
+
+.beneficios__text{
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+        gap: 20px;
+        color: white;
+}
+
+
+.subtitle__dif{
+        color: white;
+       
+}
+
+.beneficios__text p{
+        background-color: rgba(6, 88, 66, 0.465);
+        padding: 10px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 18px;
+        box-shadow: 3px 3px 3px #0000006a;
+}
