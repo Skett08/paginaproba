@@ -198,7 +198,7 @@ function getColor(index) {
 // Gráfica de Caja y Bigote Comparativa usando Plotly
 function generarBoxPlotPlotly(datasets) {
     const traces = datasets.map((data, index) => ({
-        y: data,
+        x: data, // Orientación de la gráfica
         type: 'box',
         name: `Datos ${index + 1}`,
         marker: { color: getColor(index) }
