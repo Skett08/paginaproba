@@ -297,47 +297,54 @@ const ayudaModal = document.getElementById('ayudaModal');
 const btnAyuda = document.getElementById('btnAyuda');
 const cerrarAyuda = document.getElementById('cerrarAyuda');
 
-// Datos de las fórmulas
 const formulas = [
     {
         nombre: "Media",
         descripcion: "Promedio de todos los valores. Suma de todos los elementos dividida entre la cantidad de elementos.",
-        formula: "μ = (Σxᵢ) / N"
+        formula: "μ = (Σxᵢ) / N",
+        ejemplo: "Ejemplo: [3, 5, 7, 7, 9]\nμ = (3 + 5 + 7 + 7 + 9) / 5 = 31 / 5 = 6.2"
     },
     {
         nombre: "Moda",
         descripcion: "Valores que aparecen con más frecuencia en el conjunto de datos.",
-        formula: "Moda = valores con mayor frecuencia"
+        formula: "Moda = valores con mayor frecuencia",
+        ejemplo: "Ejemplo: [3, 5, 7, 7, 9]\nEl número 7 aparece 2 veces (es la moda)."
     },
     {
         nombre: "Mediana",
         descripcion: "Valor central cuando los datos están ordenados. Si hay un número par de elementos, es el promedio de los dos valores centrales.",
-        formula: "Mediana = valor central ordenado"
+        formula: "Mediana = valor central ordenado",
+        ejemplo: "Ejemplo 1 (impar): [3, 5, 7, 7, 9] → Mediana = 7\nEjemplo 2 (par): [3, 5, 7, 9] → Mediana = (5 + 7)/2 = 6"
     },
     {
         nombre: "Varianza",
         descripcion: "Medida de dispersión que representa la variabilidad promedio al cuadrado respecto a la media.",
-        formula: "σ² = Σ(xᵢ - μ)² / N"
+        formula: "σ² = Σ(xᵢ - μ)² / N",
+        ejemplo: "Ejemplo: [3, 5, 7, 7, 9] (μ = 6.2)\nσ² = [(3-6.2)² + (5-6.2)² + (7-6.2)² + (7-6.2)² + (9-6.2)²]/5 = 20.8/5 = 4.16"
     },
     {
         nombre: "Desviación Estándar",
         descripcion: "Raíz cuadrada de la varianza. Indica la dispersión de los datos en las mismas unidades que los datos originales.",
-        formula: "σ = √σ²"
+        formula: "σ = √σ²",
+        ejemplo: "Ejemplo: σ² = 4.16 → σ = √4.16 ≈ 2.04"
     },
     {
         nombre: "Cuartiles",
         descripcion: "Valores que dividen los datos ordenados en cuatro partes iguales. Q1: 25%, Q2: 50% (mediana), Q3: 75%.",
-        formula: "Qᵢ = valor en la posición i*(N+1)/4"
+        formula: "Qᵢ = valor en la posición i*(N+1)/4",
+        ejemplo: "Ejemplo: [3, 5, 7, 7, 9] (N=5)\nQ1 = posición (5+1)/4 = 1.5 → (3+5)/2 = 4\nQ2 = Mediana = 7\nQ3 = posición 3*(5+1)/4 = 4.5 → (7+9)/2 = 8"
     },
     {
         nombre: "Sesgo",
         descripcion: "Medida de asimetría de la distribución. Sesgo positivo indica cola a la derecha, negativo cola a la izquierda.",
-        formula: "Sesgo = [n/((n-1)(n-2))] * Σ[(xᵢ - μ)/σ]³"
+        formula: "Sesgo = [n/((n-1)(n-2))] * Σ[(xᵢ - μ)/σ]³",
+        ejemplo: "Ejemplo: [3, 5, 7, 7, 9]\nCálculo detallado ≈ -0.566 (Sesgo negativo: cola a la izquierda)"
     },
     {
         nombre: "Curtosis",
         descripcion: "Medida del \"pico\" de la distribución. Indica cuánta concentración existe alrededor de la media.",
-        formula: "Curtosis = [n(n+1)/((n-1)(n-2)(n-3))] * Σ[(xᵢ - μ)/σ]⁴ - [3(n-1)²/((n-2)(n-3))]"
+        formula: "Curtosis = [n(n+1)/((n-1)(n-2)(n-3))] * Σ[(xᵢ - μ)/σ]⁴ - [3(n-1)²/((n-2)(n-3))]",
+        ejemplo: "Ejemplo: [3, 5, 7, 7, 9]\nCálculo detallado ≈ 4.23 (Distribución más picuda que la normal)"
     }
 ];
 
@@ -349,6 +356,7 @@ function generarContenidoAyuda() {
             <h3>${index + 1}. ${item.nombre}</h3>
             <div class="formula">${item.formula}</div>
             <div class="descripcion">${item.descripcion}</div>
+            <div class="ejemplo">${item.ejemplo.replace(/\n/g, '<br>')}</div>
         </div>
     `).join('');
 }

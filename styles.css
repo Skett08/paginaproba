@@ -260,3 +260,19 @@ button:active {
         padding: 10px;
     }
 }
+
+.ejemplo {
+    color: #9ca6fe;
+    font-size: 13px;
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    white-space: pre-wrap;
+}
+
+.ejemplo br {
+    display: block;
+    content: "";
+    margin: 5px 0;
+}
