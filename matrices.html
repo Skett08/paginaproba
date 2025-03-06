@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operaciones con Matrices - FIEX</title>
+    <link rel="stylesheet" href="matriz.css">
+</head>
+<body>
+    <button id="regresar" onclick="location.href='index.html'">Regresar</button>
+    
+    <div class="container">
+        <h1>Calculadora de Matrices</h1>
+        
+        <!-- Controles de dimensión -->
+        <div class="controles-matriz">
+            <div class="dimension-input">
+                <label>Filas: <input type="number" id="filas" min="1" value="2" class="dimension"></label>
+                <label>Columnas: <input type="number" id="columnas" min="1" value="2" class="dimension"></label>
+                <button onclick="generarMatrices()">Generar Matrices</button>
+            </div>
+        </div>
+
+        <!-- Contenedores de matrices -->
+        <div class="matrices-container">
+            <div class="matrix-input" id="matrixA">
+                <h3>Matriz A</h3>
+                <div class="matrix-grid" id="gridA"></div>
+            </div>
+
+            <div class="matrix-input" id="matrixB">
+                <h3>Matriz B</h3>
+                <div class="matrix-grid" id="gridB"></div>
+            </div>
+            
+            <div class="operaciones">
+                <button onclick="calcularOperacion('suma')">A + B</button>
+                <button onclick="calcularOperacion('resta')">A - B</button>
+                <button onclick="calcularOperacion('multiplicacion')">A × B</button>
+                <button onclick="calcularOperacion('escalar')">Escalar</button>
+                <button onclick="calcularOperacion('determinante')">Determinante</button>
+                <button onclick="calcularOperacion('inversa')">Inversa</button>
+                <button onclick="calcularOperacion('transpuesta')">Transpuesta</button>
+            </div>
+
+
+        </div>
+
+        <!-- Resultados -->
+        <div class="resultados-matriz" id="resultadoContainer">
+            <h3>Resultado</h3>
+            <div class="matrix-grid" id="resultadoGrid"></div>
+            <div id="resultadoTexto"></div>
+        </div>
+    </div>
+
+    <script>
+        // Función para generar las matrices vacías
+        function generarMatrices() {
+            const filas = parseInt(document.getElementById('filas').value);
+            const columnas = parseInt(document.getElementById('columnas').value);
+            
+            // Generar matriz A
+            let gridA = '';
+            for(let i = 0; i < filas; i++) {
+                gridA += '<div class="matrix-row">';
+                for(let j = 0; j < columnas; j++) {
+                    gridA += `<input type="number" class="matrix-cell" data-row="${i}" data-col="${j}">`;
+                }
+                gridA += '</div>';
+            }
+            document.getElementById('gridA').innerHTML = gridA;
+
+            // Generar matriz B
+            let gridB = '';
+            for(let i = 0; i < filas; i++) {
+                gridB += '<div class="matrix-row">';
+                for(let j = 0; j < columnas; j++) {
+                    gridB += `<input type="number" class="matrix-cell" data-row="${i}" data-col="${j}">`;
+                }
+                gridB += '</div>';
+            }
+            document.getElementById('gridB').innerHTML = gridB;
+        }
+
+        // Función base para operaciones (implementar lógica según operación)
+        function calcularOperacion(operacion) {
+            // Obtener valores de las matrices y realizar operación
+            // Mostrar resultado en resultadoGrid y resultadoTexto
+        }
+    </script>
+    <script src="scriptmatriz.js"></script>
+</body>
+</html>
