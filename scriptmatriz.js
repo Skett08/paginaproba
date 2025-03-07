@@ -1,14 +1,40 @@
+// Función de generación de grid mejorada
+const generateGrid = (rows, cols) => {
+    return Array(rows).fill().map((_, i) => `
+        <div class="matrix-row">
+            ${Array(cols).fill().map((_, j) => `
+                <input type="number" 
+                       class="matrix-cell" 
+                       data-row="${i}" 
+                       data-col="${j}">`
+            ).join('')}
+        </div>`
+    ).join('');
+};
+
+function generarMatrizA() {
+    const filas = parseInt(document.getElementById('filasA').value);
+    const columnas = parseInt(document.getElementById('columnasA').value);
+    document.getElementById('gridA').innerHTML = generateGrid(filas, columnas);
+}
+
+function generarMatrizB() {
+    const filas = parseInt(document.getElementById('filasB').value);
+    const columnas = parseInt(document.getElementById('columnasB').value);
+    document.getElementById('gridB').innerHTML = generateGrid(filas, columnas);
+}
+
 // Helper functions
-const getMatrixValues = (gridId) => {
-    const inputs = document.querySelectorAll(`#${gridId} .matrix-cell`);
-    const rows = Math.max(...Array.from(inputs).map(input => parseInt(input.dataset.row))) + 1;
-    const cols = Math.max(...Array.from(inputs).map(input => parseInt(input.dataset.col))) + 1;
+const getMatrixValues = (gridId, rows, cols) => {
     const matrix = Array(rows).fill().map(() => Array(cols).fill(0));
+    const inputs = document.querySelectorAll(`#${gridId} .matrix-cell`);
     
     inputs.forEach(input => {
         const row = parseInt(input.dataset.row);
         const col = parseInt(input.dataset.col);
-        matrix[row][col] = parseFloat(input.value) || 0;
+        if (row < rows && col < cols) {
+            matrix[row][col] = parseFloat(input.value) || 0;
+        }
     });
     
     return matrix;
@@ -37,33 +63,34 @@ const showError = (message) => {
 
 // Matrix operations
 const matrixOperations = {
-    suma: (A, B) => {
-        if (A.length !== B.length || A[0].length !== B[0].length) {
-            showError('Las matrices deben tener la misma dimensión');
+    suma: (A, B, rowsA, colsA, rowsB, colsB) => {
+        if (rowsA !== rowsB || colsA !== colsB) {
+            showError('Dimensiones incompatibles para suma');
             return null;
         }
         return A.map((row, i) => row.map((val, j) => val + B[i][j]));
     },
 
-    resta: (A, B) => {
-        if (A.length !== B.length || A[0].length !== B[0].length) {
-            showError('Las matrices deben tener la misma dimensión');
+    resta: (A, B, rowsA, colsA, rowsB, colsB) => {
+        if (rowsA !== rowsB || colsA !== colsB) {
+            showError('Dimensiones incompatibles para resta');
             return null;
         }
         return A.map((row, i) => row.map((val, j) => val - B[i][j]));
     },
 
-    multiplicacion: (A, B) => {
-        if (A[0].length !== B.length) {
-            showError('El número de columnas de A debe coincidir con el de filas de B');
+    multiplicacion: (A, B, rowsA, colsA, rowsB, colsB) => {
+        if (colsA !== rowsB) {
+            showError(`Columnas de A (${colsA}) ≠ Filas de B (${rowsB})`);
             return null;
         }
-        return Array(A.length).fill().map((_, i) =>
-            Array(B[0].length).fill().map((_, j) =>
+        return Array(rowsA).fill().map((_, i) =>
+            Array(colsB).fill().map((_, j) =>
                 A[i].reduce((sum, val, k) => sum + val * B[k][j], 0)
             )
         );
     },
+
 
     escalar: (A) => {
         const scalar = parseFloat(prompt('Ingrese el valor escalar:'));
@@ -122,24 +149,37 @@ const matrixOperations = {
 
 // Main function
 function calcularOperacion(operacion) {
-    const A = getMatrixValues('gridA');
-    const B = operacion !== 'escalar' ? getMatrixValues('gridB') : null;
-    let resultado;
-
+    const rowsA = parseInt(document.getElementById('filasA').value);
+    const colsA = parseInt(document.getElementById('columnasA').value);
+    const rowsB = parseInt(document.getElementById('filasB').value);
+    const colsB = parseInt(document.getElementById('columnasB').value);
+    
+    const A = getMatrixValues('gridA', rowsA, colsA);
+    const B = operacion !== 'escalar' ? getMatrixValues('gridB', rowsB, colsB) : null;
+    
     try {
+        let resultado;
         switch(operacion) {
             case 'suma':
-            case 'resta':
-            case 'multiplicacion':
-                resultado = matrixOperations[operacion](A, B);
+                resultado = matrixOperations.suma(A, B, rowsA, colsA, rowsB, colsB);
                 break;
-            case 'determinante':
-            case 'transpuesta':
-            case 'inversa':
-                resultado = matrixOperations[operacion](A);
+            case 'resta':
+                resultado = matrixOperations.resta(A, B, rowsA, colsA, rowsB, colsB);
+                break;
+            case 'multiplicacion':
+                resultado = matrixOperations.multiplicacion(A, B, rowsA, colsA, rowsB, colsB);
                 break;
             case 'escalar':
-                resultado = matrixOperations[operacion](A);
+                resultado = matrixOperations.escalar(A);
+                break;
+            case 'determinante':
+                resultado = matrixOperations.determinante(A);
+                break;
+            case 'inversa':
+                resultado = matrixOperations.inversa(A);
+                break;
+            case 'transpuesta':
+                resultado = matrixOperations.transpuesta(A);
                 break;
             default:
                 showError('Operación no reconocida');
@@ -148,40 +188,32 @@ function calcularOperacion(operacion) {
 
         if (!resultado) return;
 
+        const resultadoGrid = document.getElementById('resultadoGrid');
+        const resultadoTexto = document.getElementById('resultadoTexto');
+        
+        // Limpiar resultados anteriores
+        resultadoGrid.innerHTML = '';
+        resultadoTexto.innerHTML = '';
+
         if (typeof resultado === 'number') {
-            document.getElementById('resultadoGrid').innerHTML = '';
-            document.getElementById('resultadoTexto').textContent = `Determinante: ${resultado.toFixed(2)}`;
+            resultadoTexto.textContent = `Resultado: ${resultado.toFixed(2)}`;
         } else {
-            document.getElementById('resultadoGrid').innerHTML = createMatrix(resultado);
-            document.getElementById('resultadoTexto').textContent = 
-                operacion === 'inversa' ? 'Matriz Inversa' : 
-                operacion === 'transpuesta' ? 'Matriz Transpuesta' : '';
+            resultadoGrid.innerHTML = createMatrix(resultado);
+            resultadoTexto.textContent = `Operación: ${operacion.toUpperCase()}`;
         }
+
     } catch (error) {
         showError('Error en el cálculo: ' + error.message);
     }
 }
 
-// Initial matrix generation
-function generarMatrices() {
-    const filas = parseInt(document.getElementById('filas').value);
-    const columnas = parseInt(document.getElementById('columnas').value);
-    
-    const generateGrid = (rows, cols) => 
-        Array(rows).fill().map((_, i) => `
-            <div class="matrix-row">
-                ${Array(cols).fill().map((_, j) => `
-                    <input type="number" 
-                           class="matrix-cell" 
-                           data-row="${i}" 
-                           data-col="${j}">`
-                ).join('')}
-            </div>`
-        ).join('');
-    
-    document.getElementById('gridA').innerHTML = generateGrid(filas, columnas);
-    document.getElementById('gridB').innerHTML = generateGrid(filas, columnas);
-}
-
-// Initialize default matrices
-generarMatrices();
+// Inicializar matrices al cargar
+window.onload = () => {
+    try {
+        generarMatrizA();
+        generarMatrizB();
+    } catch (e) {
+        console.error('Error al inicializar:', e);
+        alert('Error al cargar las matrices');
+    }
+};

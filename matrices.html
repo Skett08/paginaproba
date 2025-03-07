@@ -14,10 +14,22 @@
         
         <!-- Controles de dimensión -->
         <div class="controles-matriz">
-            <div class="dimension-input">
-                <label>Filas: <input type="number" id="filas" min="1" value="2" class="dimension"></label>
-                <label>Columnas: <input type="number" id="columnas" min="1" value="2" class="dimension"></label>
-                <button onclick="generarMatrices()">Generar Matrices</button>
+            <div class="dimensiones-separadas">
+                <!-- Dimensiones para Matriz A -->
+                <div class="dimension-input">
+                    <h4>Matriz A</h4>
+                    <label>Filas: <input type="number" id="filasA" min="1" value="2"></label>
+                    <label>Columnas: <input type="number" id="columnasA" min="1" value="2"></label>
+                    <button onclick="generarMatrizA(); return false;">Generar A</button>
+                </div>
+        
+                <!-- Dimensiones para Matriz B -->
+                <div class="dimension-input">
+                    <h4>Matriz B</h4>
+                    <label>Filas: <input type="number" id="filasB" min="1" value="2"></label>
+                    <label>Columnas: <input type="number" id="columnasB" min="1" value="2"></label>
+                    <button onclick="generarMatrizB(); return false;">Generar B</button>
+                </div>
             </div>
         </div>
 
@@ -53,42 +65,6 @@
             <div id="resultadoTexto"></div>
         </div>
     </div>
-
-    <script>
-        // Función para generar las matrices vacías
-        function generarMatrices() {
-            const filas = parseInt(document.getElementById('filas').value);
-            const columnas = parseInt(document.getElementById('columnas').value);
-            
-            // Generar matriz A
-            let gridA = '';
-            for(let i = 0; i < filas; i++) {
-                gridA += '<div class="matrix-row">';
-                for(let j = 0; j < columnas; j++) {
-                    gridA += `<input type="number" class="matrix-cell" data-row="${i}" data-col="${j}">`;
-                }
-                gridA += '</div>';
-            }
-            document.getElementById('gridA').innerHTML = gridA;
-
-            // Generar matriz B
-            let gridB = '';
-            for(let i = 0; i < filas; i++) {
-                gridB += '<div class="matrix-row">';
-                for(let j = 0; j < columnas; j++) {
-                    gridB += `<input type="number" class="matrix-cell" data-row="${i}" data-col="${j}">`;
-                }
-                gridB += '</div>';
-            }
-            document.getElementById('gridB').innerHTML = gridB;
-        }
-
-        // Función base para operaciones (implementar lógica según operación)
-        function calcularOperacion(operacion) {
-            // Obtener valores de las matrices y realizar operación
-            // Mostrar resultado en resultadoGrid y resultadoTexto
-        }
-    </script>
     <script src="scriptmatriz.js"></script>
 </body>
 </html>

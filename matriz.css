@@ -206,3 +206,34 @@ button:active {
     transform: scale(0.95);
     box-shadow: 0px 2px 5px rgba(0, 123, 255, 0.3);
 }
+
+.dimensiones-separadas {
+    display: flex;
+    justify-content: space-around;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.dimension-input {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #4CAF50;
+    min-width: 250px;
+}
+
+.dimension-input h4 {
+    color: #4CAF50;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .dimensiones-separadas {
+        flex-direction: column;
+    }
+    
+    .dimension-input {
+        width: 100%;
+    }
+}
