@@ -239,48 +239,63 @@ function generarHistogramaPlotly(datasets) {
 
 // Gráfico XY (Scatter) Comparativo usando Plotly
 function generarXYPlotly(datasets) {
-    const traces = datasets.map((data, index) => {
-        const indices = data.map((_, i) => i + 1);
-        return {
+    let traces = [];
+    let allX = []; // Array para almacenar todos los valores de x
+    let allY = []; // Array para almacenar todos los valores de y
+
+    // Agregar los puntos de cada dataset
+    for (let index = 0; index < datasets.length; index++) {
+        let data = datasets[index];
+        // Usamos el índice (empezando en 1) para la coordenada x de cada punto
+        let indices = data.map((_, i) => i + 1);
+        
+        // Guardamos los puntos para el cálculo global
+        allX.push(...indices);
+        allY.push(...data);
+        
+        // Traza para cada conjunto de datos
+        traces.push({
             x: indices,
             y: data,
             mode: 'markers',
             type: 'scatter',
             name: `Datos ${index + 1}`,
             marker: { color: getColor(index), size: 8 }
-        };
+        });
+    }
+
+    // Calcular la regresión lineal combinada de todos los puntos
+    let n = allX.length;
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    for (let i = 0; i < n; i++) {
+        let x = allX[i];
+        let y = allY[i];
+        sumX += x;
+        sumY += y;
+        sumXY += x * y;
+        sumX2 += x * x;
+    }
+    let slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    let intercept = (sumY - slope * sumX) / n;
+
+    // Para dibujar la línea, se usan dos puntos extremos basados en el rango de x
+    let xMin = Math.min(...allX);
+    let xMax = Math.max(...allX);
+    let regressionX = [xMin, xMax];
+    let regressionY = [slope * xMin + intercept, slope * xMax + intercept];
+
+    // Agregar la traza de la línea de mínimos cuadrados
+    traces.push({
+        x: regressionX,
+        y: regressionY,
+        mode: 'lines',
+        type: 'scatter',
+        name: 'Línea de mínimos cuadrados',
+        line: { color: 'black', dash: 'dash' }
     });
 
     var layout = {
-        title: 'Gráfico XY Comparativo',
-        xaxis: { title: 'Índice' },
-        yaxis: { title: 'Valor' },
-        autosize: true,
-        width: 600,
-        height: 400,
-        margin: { l: 50, r: 50, b: 50, t: 50 }
-    };
-
-    Plotly.newPlot('grafico', traces, layout);
-}
-
-// Gráfico de Tendencia (Línea) Comparativo usando Plotly
-function generarTendenciaPlotly(datasets) {
-    const traces = datasets.map((data, index) => {
-        const indices = data.map((_, i) => i + 1);
-        return {
-            x: indices,
-            y: data,
-            mode: 'lines+markers',
-            type: 'scatter',
-            name: `Datos ${index + 1}`,
-            line: { color: getColor(index) },
-            marker: { color: getColor(index), size: 8 }
-        };
-    });
-
-    var layout = {
-        title: 'Gráfico de Tendencia Comparativo',
+        title: 'Gráfico XY Comparativo con Regresión',
         xaxis: { title: 'Índice' },
         yaxis: { title: 'Valor' },
         autosize: true,
