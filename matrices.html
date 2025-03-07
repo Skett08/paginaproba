@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operaciones con Matrices - FIEX</title>
     <link rel="stylesheet" href="matriz.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <button id="regresar" onclick="location.href='index.html'">Regresar</button>
@@ -20,7 +21,12 @@
                     <h4>Matriz A</h4>
                     <label>Filas: <input type="number" id="filasA" min="1" value="2"></label>
                     <label>Columnas: <input type="number" id="columnasA" min="1" value="2"></label>
-                    <button onclick="generarMatrizA(); return false;">Generar A</button>
+                    <button onclick="generarMatrizA(); return false;">Generar Matriz A</button>
+                    <div class="upload-section">
+                        <input type="file" id="fileA" accept=".xlsx, .xls" hidden>
+                        <button onclick="document.getElementById('fileA').click()">Subir Excel</button>
+                        <span id="fileAName"></span>
+                    </div>
                 </div>
         
                 <!-- Dimensiones para Matriz B -->
@@ -28,7 +34,12 @@
                     <h4>Matriz B</h4>
                     <label>Filas: <input type="number" id="filasB" min="1" value="2"></label>
                     <label>Columnas: <input type="number" id="columnasB" min="1" value="2"></label>
-                    <button onclick="generarMatrizB(); return false;">Generar B</button>
+                    <button onclick="generarMatrizB(); return false;">Generar Matriz B</button>
+                    <div class="upload-section">
+                        <input type="file" id="fileB" accept=".xlsx, .xls" hidden>
+                        <button onclick="document.getElementById('fileB').click()">Subir Excel</button>
+                        <span id="fileBName"></span>
+                    </div>
                 </div>
             </div>
         </div>

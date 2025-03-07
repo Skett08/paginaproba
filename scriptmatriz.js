@@ -26,8 +26,8 @@ function generarMatrizB() {
 
 // Helper functions
 const getMatrixValues = (gridId, rows, cols) => {
-    const matrix = Array(rows).fill().map(() => Array(cols).fill(0));
     const inputs = document.querySelectorAll(`#${gridId} .matrix-cell`);
+    const matrix = Array(rows).fill().map(() => Array(cols).fill(0));
     
     inputs.forEach(input => {
         const row = parseInt(input.dataset.row);
@@ -43,14 +43,16 @@ const getMatrixValues = (gridId, rows, cols) => {
 const createMatrix = (matrix, editable = false) => {
     return matrix.map((row, i) => `
         <div class="matrix-row">
-            ${row.map((val, j) => `
-                <input type="number" 
-                       class="matrix-cell" 
-                       value="${val.toFixed(2)}" 
-                       ${editable ? '' : 'disabled'}
-                       data-row="${i}" 
-                       data-col="${j}">`
-            ).join('')}
+            ${row.map((val, j) => {
+                // Si es un número, lo formateamos; si no, lo dejamos sin formatear (o lo convertimos a 0)
+                const formattedVal = typeof val === 'number' ? val.toFixed(2) : (Number(val) || 0);
+                return `<input type="number" 
+                               class="matrix-cell" 
+                               value="${formattedVal}" 
+                               ${editable ? '' : 'disabled'}
+                               data-row="${i}" 
+                               data-col="${j}">`;
+            }).join('')}
         </div>`
     ).join('');
 };
@@ -217,3 +219,38 @@ window.onload = () => {
         alert('Error al cargar las matrices');
     }
 };
+
+const handleExcelUpload = (file, gridId, rowsInputId, colsInputId, fileNameSpanId) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+        
+        const rows = jsonData.length;
+        const cols = Math.max(...jsonData.map(row => row.length));
+        
+        // Actualizar dimensiones
+        document.getElementById(rowsInputId).value = rows;
+        document.getElementById(colsInputId).value = cols;
+        
+        // Generar grid
+        document.getElementById(gridId).innerHTML = createMatrix(jsonData.map(row => 
+            [...row, ...Array(cols - row.length).fill(0)].slice(0, cols)
+        ));
+        
+        // Mostrar nombre de archivo
+        document.getElementById(fileNameSpanId).textContent = file.name;
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+// Event listeners para los inputs de archivo
+document.getElementById('fileA').addEventListener('change', (e) => {
+    handleExcelUpload(e.target.files[0], 'gridA', 'filasA', 'columnasA', 'fileAName');
+});
+
+document.getElementById('fileB').addEventListener('change', (e) => {
+    handleExcelUpload(e.target.files[0], 'gridB', 'filasB', 'columnasB', 'fileBName');
+});
