@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #1e1e2e;
-    color: #ffffff;
+    background-color: #b8cbff;
+    color: #000000;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -13,10 +13,10 @@ body {
 
 .container {
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(255, 255, 255);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 10px rgba(51, 139, 19, 0.605);
     width: 100%;
     max-width: 800px;
 }
@@ -62,7 +62,7 @@ button:hover {
 /* Estilos específicos para matrices */
 .controles-matriz {
     margin: 20px 0;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgb(255, 255, 255);
     padding: 15px;
     border-radius: 10px;
 }
@@ -79,9 +79,9 @@ button:hover {
     width: 60px;
     padding: 8px;
     border-radius: 5px;
-    border: 1px solid #4CAF50;
+    border: 1px solid #000000;
     background: rgba(255, 255, 255, 0.1);
-    color: white;
+    color: rgb(0, 0, 0);
     text-align: center;
 }
 
@@ -98,7 +98,7 @@ button:hover {
     background: rgba(255, 255, 255, 0.05);
     padding: 20px;
     border-radius: 10px;
-    border: 1px solid #4CAF50;
+    border: 1px solid #000000;
     min-width: 250px;
 }
 
@@ -125,16 +125,16 @@ button:hover {
     height: 45px;
     padding: 5px;
     text-align: center;
-    border: 1px solid #4CAF50;
+    border: 1px solid #000000;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 16px;
     transition: all 0.3s ease;
 }
 
 .matrix-cell:focus {
-    background: rgba(76, 175, 80, 0.1);
+    background: rgba(8, 126, 222, 0.1);
     outline: none;
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
 }
@@ -147,21 +147,21 @@ button:hover {
 }
 
 .resultados-matriz {
-    background: rgba(76, 175, 80, 0.1);
+    background: rgb(255, 255, 255);
     padding: 25px;
     border-radius: 10px;
     margin-top: 30px;
-    border: 1px solid #4CAF50;
+    border: 1px solid #000000;
 }
 
 #resultadoTexto {
     margin-top: 20px;
     font-size: 18px;
-    color: #4CAF50;
+    color: #000000;
     font-weight: bold;
     padding: 15px;
     border-radius: 8px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgb(255, 255, 255);
 }
 
 /* Responsive Design */
@@ -218,7 +218,7 @@ button:active {
     background: rgba(255, 255, 255, 0.05);
     padding: 20px;
     border-radius: 10px;
-    border: 1px solid #4CAF50;
+    border: 1px solid #000000;
     min-width: 250px;
 }
 
