@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #1e1e2e;
-    color: #ffffff;
+    background-color: #b8cbff;
+    color: #000000;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -13,12 +13,13 @@ body {
 
 .container {
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(255, 255, 255);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 10px rgba(51, 139, 19, 0.605);
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
+    min-height: 80vh;
 }
 
 /* Estilo para el campo de entrada */
@@ -27,35 +28,35 @@ body {
     max-width: 400px;
     padding: 10px;
     margin: 20px auto;
-    border: 2px solid #ddd;
+    border: 2px solid #000000;
     border-radius: 8px;
     font-size: 16px;
-    background-color: #f9f9f9;
-    color: #333;
+    background-color: #ffffff;
+    color: #000000;
     transition: all 0.3s ease;
     display: block;
 }
 
 #numeros:focus {
     border-color: #4CAF50;
-    background-color: #fff;
+    background-color: #ffffff;
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
     outline: none;
 }
 
 /* Estilo para los botones */
 button {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background: linear-gradient(135deg, #4b73ec, #4b73ec);
     color: #ffffff;
-    font-size: 18px;
+    font-size: 30px;
     font-weight: bold;
-    padding: 14px 28px;
+    padding: 20px 40px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     margin: 10px;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.4);
+    box-shadow: 0px 4px 10px rgb(28, 167, 49);
     text-transform: uppercase;
     letter-spacing: 1px;
     position: relative;
@@ -69,7 +70,7 @@ button::before {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
     transition: left 0.4s;
 }
 
@@ -94,7 +95,7 @@ button:active {
     top: 20px;
     left: 20px;
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color: #ffffff;
     color: white;
     border: none;
     border-radius: 5px;
@@ -113,19 +114,19 @@ button:active {
     max-width: 400px;
     padding: 10px;
     margin: 20px auto;
-    border: 2px solid #ddd;
+    border: 2px solid #000000;
     border-radius: 8px;
     font-size: 16px;
-    background-color: #f9f9f9;
-    color: #333;
+    background-color: #ffffff;
+    color: #000000;
     transition: all 0.3s ease;
     display: block;
 }
 
 #tipoGrafica:focus {
-    border-color: #4CAF50;
+    border-color: #ffffff;
     background-color: #fff;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    box-shadow: 0 0 5px rgb(255, 255, 255);
     outline: none;
 }
 
@@ -174,7 +175,7 @@ button:active {
 }
 
 .dataset-results h4 {
-    color: #18dd06;
+    color: #000000;
     margin-bottom: 10px;
 }
 
@@ -199,7 +200,7 @@ button:active {
 }
 
 #contenidoAyuda {
-    background-color: #2a2a3a;
+    background-color: #ffffff;
     padding: 30px;
     border-radius: 15px;
     width: 80%;
@@ -214,7 +215,7 @@ button:active {
     position: absolute;
     top: 15px;
     right: 20px;
-    color: #fff;
+    color: #ffffff;
     font-size: 28px;
     cursor: pointer;
     transition: 0.3s;
@@ -238,14 +239,14 @@ button:active {
 }
 
 .formula {
-    color: #00bcd4;
+    color: #0026ff;
     font-family: monospace;
     font-size: 14px;
     margin: 10px 0;
 }
 
 .descripcion {
-    color: #cccccc;
+    color: #000000;
     font-size: 14px;
     line-height: 1.6;
 }
@@ -262,7 +263,7 @@ button:active {
 }
 
 .ejemplo {
-    color: #9ca6fe;
+    color: #000000;
     font-size: 13px;
     margin-top: 8px;
     padding: 8px;
