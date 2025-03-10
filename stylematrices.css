@@ -1,0 +1,261 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #b8cbff;
+    color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.container {
+    text-align: center;
+    background: rgb(245, 245, 245);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(51, 139, 19, 0.605);
+    width: 100%;
+    max-width: 800px;
+}
+
+button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgb(28, 167, 49);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0056b3, #003f80);
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(0, 123, 255, 0.6);
+}
+
+#regresar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+/* Estilos específicos para matrices */
+.controles-matriz {
+    margin: 20px 0;
+    background: rgb(245, 245, 245);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.dimension-input {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dimension-input input {
+    width: 60px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #000000;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgb(0, 0, 0);
+    text-align: center;
+}
+
+.matrices-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin: 30px 0;
+}
+
+.matrix-input {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #000000;
+    min-width: 250px;
+}
+
+.matrix-input h3 {
+    color: #4CAF50;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.matrix-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.matrix-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.matrix-cell {
+    width: 60px;
+    height: 45px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #000000;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgb(0, 0, 0);
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.matrix-cell:focus {
+    background: rgba(8, 126, 222, 0.1);
+    outline: none;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+.operaciones {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.resultados-matriz {
+    background: rgb(174, 239, 213);
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 30px;
+    border: 1px solid #000000;
+}
+
+#resultadoTexto {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #000000;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 8px;
+    background: rgb(255, 255, 255);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .matrices-container {
+        flex-direction: column;
+    }
+    
+    .matrix-input {
+        width: 100%;
+    }
+    
+    .operaciones {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .matrix-cell {
+        width: 50px;
+        height: 40px;
+    }
+}
+
+/* Efectos de hover y transiciones mejorados */
+button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: left 0.4s;
+}
+
+button:hover::before {
+    left: 100%;
+}
+
+button:active {
+    transform: scale(0.95);
+    box-shadow: 0px 2px 5px rgba(0, 123, 255, 0.3);
+}
+
+.dimensiones-separadas {
+    display: flex;
+    justify-content: space-around;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.dimension-input {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #000000;
+    min-width: 250px;
+}
+
+.dimension-input h4 {
+    color: #4CAF50;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .dimensiones-separadas {
+        flex-direction: column;
+    }
+    
+    .dimension-input {
+        width: 100%;
+    }
+}
+
+.upload-section {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.upload-section button {
+    background: #4CAF50;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+#fileAName, #fileBName {
+    color: #4CAF50;
+    font-size: 12px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

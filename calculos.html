@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cálculos de Datos - FIEX</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="stylecalculos.css">
   <!-- Se incluye Plotly.js -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <!-- Se incluye XLSX para leer archivos de Excel -->
@@ -22,8 +22,15 @@
 5 7 8 2 4 6"></textarea>
     
     <br>
-    <label for="excelFile">O sube tus archivos de Excel (máximo 2 archivos) </label>
-    <input type="file" id="excelFile" accept=".xlsx, .xls" multiple>
+<!-- Botones estilizados para subir archivos Excel -->
+<label for="excelFile1" class="custom-file-upload">Subir Excel Datos 1</label>
+<input type="file" id="excelFile1" accept=".xlsx, .xls">
+<span id="excelFile1Name" class="file-name">Archivo no seleccionado</span>
+<br>
+<label for="excelFile2" class="custom-file-upload">Subir Excel Datos 2</label>
+<input type="file" id="excelFile2" accept=".xlsx, .xls">
+<span id="excelFile2Name" class="file-name">Archivo no seleccionado</span>
+
   
     <br><br>
     <label for="tipoGrafica">Selecciona el tipo de gráfica:</label>
@@ -76,11 +83,11 @@
           <h2>Ayuda Estadística</h2>
           <div id="listaFormulas"></div>
       </div>
-  </div>
+    </div>
 
     <!-- Contenedor para Plotly -->
     <div id="grafico"></div>
   </div>
-  <script src="script.js"></script>
+  <script src="scriptcalculos.js"></script>
 </body>
 </html>
