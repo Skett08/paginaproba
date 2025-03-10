@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #b8cbff;
+    background-color: #99b4ff;
     color: #000000;
     display: flex;
     justify-content: center;
@@ -13,10 +13,10 @@ body {
 
 .container {
     text-align: center;
-    background: rgb(255, 255, 255);
+    background: rgb(245, 245, 245);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(51, 139, 19, 0.605);
+    box-shadow: 0px 4px 10px rgb(115, 220, 145);
     width: 100%;
     max-width: 1200px;
     min-height: 80vh;
@@ -125,8 +125,8 @@ button:active {
 
 #tipoGrafica:focus {
     border-color: #ffffff;
-    background-color: #fff;
-    box-shadow: 0 0 5px rgb(255, 255, 255);
+    background-color: #ffffff;
+    box-shadow: 0 0 5px rgb(0, 0, 0);
     outline: none;
 }
 
@@ -156,7 +156,7 @@ button:active {
 .dataset-results {
     flex: 1;
     min-width: 300px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(0, 0, 0);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -200,7 +200,7 @@ button:active {
 }
 
 #contenidoAyuda {
-    background-color: #ffffff;
+    background-color: #d7e1ff;
     padding: 30px;
     border-radius: 15px;
     width: 80%;
@@ -215,20 +215,20 @@ button:active {
     position: absolute;
     top: 15px;
     right: 20px;
-    color: #ffffff;
+    color: #ff0000;
     font-size: 28px;
     cursor: pointer;
     transition: 0.3s;
 }
 
 #cerrarAyuda:hover {
-    color: #ff5555;
+    color: #ff0000;
 }
 
 .formula-item {
     margin-bottom: 20px;
     padding: 15px;
-    background: rgba(255,255,255,0.05);
+    background: rgb(245, 245, 245);
     border-radius: 8px;
     border-left: 4px solid #4CAF50;
 }
@@ -267,7 +267,7 @@ button:active {
     font-size: 13px;
     margin-top: 8px;
     padding: 8px;
-    background: rgba(0, 0, 0, 0.2);
+    background: #b9c5e9;
     border-radius: 4px;
     white-space: pre-wrap;
 }
