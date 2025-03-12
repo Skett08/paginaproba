@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const graficarBtn = document.getElementById('graficar');
   
   graficarBtn.addEventListener('click', () => {
-    // Si se ingresaron coordenadas, se prioriza ese ajuste
+    // Si se ingresaron coordenadas, se prioriza ese ajuste (3D)
     const coordsStr = document.getElementById('coordenadas').value.trim();
     if (coordsStr !== "") {
       fitCoordinates(coordsStr);
@@ -10,17 +10,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Si no hay coordenadas, se usan los otros dos campos (recta y parábola)
-    const lineEq = document.getElementById('numeros').value.trim();
-    const parabolaEq = document.getElementById('funcion').value.trim();
+    const eqRecta = document.getElementById('numeros').value.trim();
+    const eqParabola = document.getElementById('funcion').value.trim();
     let traces = [];
     
-    if (lineEq !== "") {
-      const lineTrace = getLineTrace(lineEq);
-      if (lineTrace) traces.push(lineTrace);
+    if (eqRecta !== "") {
+      const rectaTrace = getLineTrace(eqRecta);
+      if (rectaTrace) traces.push(rectaTrace);
     }
     
-    if (parabolaEq !== "") {
-      const parabolaTrace = getParabolaTrace(parabolaEq);
+    if (eqParabola !== "") {
+      const parabolaTrace = getParabolaTrace(eqParabola);
       if (parabolaTrace) traces.push(parabolaTrace);
     }
     
@@ -29,15 +29,49 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
-    const layout = {
-      title: 'Gráfica de las Funciones',
-      xaxis: { title: 'x', zeroline: true },
-      yaxis: { title: 'y', zeroline: true },
-      plot_bgcolor: 'rgba(245,245,245,0.9)',
-      paper_bgcolor: '#b8cbff'
-    };
+    // Si alguno de los trazos es 3D, se usa layout 3D
+    let layout;
+    const is3D = traces.some(trace => trace.type === 'scatter3d');
+    if (is3D) {
+      layout = {
+        title: 'Gráfica de las Funciones en 3D',
+        scene: {
+          xaxis: { title: 'x', zeroline: true },
+          yaxis: { title: 'y', zeroline: true },
+          zaxis: { title: 'z', zeroline: true },
+          bgcolor: 'rgba(245,245,245,0.9)'
+        },
+        paper_bgcolor: '#b8cbff'
+      };
+    } else {
+      layout = {
+        title: 'Gráfica de las Funciones',
+        xaxis: { title: 'x', zeroline: true },
+        yaxis: { title: 'y', zeroline: true },
+        plot_bgcolor: 'rgba(245,245,245,0.9)',
+        paper_bgcolor: '#b8cbff'
+      };
+    }
     
     Plotly.newPlot('plot', traces, layout);
+  });
+  /* Gestión del Modal de Ayuda */
+  const ayudaBtn = document.getElementById('ayuda');
+  const ayudaModal = document.getElementById('ayudaModal');
+  const cerrarAyuda = document.getElementById('cerrarAyuda');
+
+  ayudaBtn.addEventListener('click', () => {
+    ayudaModal.style.display = 'flex';
+  });
+
+  cerrarAyuda.addEventListener('click', () => {
+    ayudaModal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (event) => {
+    if (event.target === ayudaModal) {
+      ayudaModal.style.display = 'none';
+    }
   });
 });
 
@@ -45,6 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function getLineTrace(equation) {
   const eq = equation.replace(/\s+/g, '').toLowerCase();
+  // Si la ecuación empieza con "z=", se interpreta en 3D
+  if (eq.startsWith("z=")) {
+    return getLineTrace3D(equation);
+  }
+  // Formato esperado: y=mx+b
   const regex = /^y=([+-]?[\d.]*)x([+-][\d.]+)?$/;
   const match = eq.match(regex);
   
@@ -70,8 +109,43 @@ function getLineTrace(equation) {
   };
 }
 
+function getLineTrace3D(equation) {
+  const eq = equation.replace(/\s+/g, '').toLowerCase();
+  // Formato esperado: z=mx+b
+  const regex = /^z=([+-]?[\d.]*)x([+-][\d.]+)?$/;
+  const match = eq.match(regex);
+  
+  if (!match) {
+    alert('Formato de recta 3D inválido. Usa el formato: z=mx+b');
+    return null;
+  }
+  
+  let mStr = match[1], bStr = match[2];
+  let m = (mStr === '' || mStr === '+') ? 1 : (mStr === '-') ? -1 : parseFloat(mStr);
+  let b = bStr ? parseFloat(bStr) : 0;
+  
+  const xValues = [-10, 10];
+  const zValues = xValues.map(x => m * x + b);
+  const yValues = [0, 0]; // Se mantiene y en 0 (puedes modificarlo si necesitas otro comportamiento)
+  
+  return {
+    x: xValues,
+    y: yValues,
+    z: zValues,
+    mode: 'lines',
+    name: 'Recta 3D',
+    type: 'scatter3d',
+    line: { color: '#4CAF50', width: 3 }
+  };
+}
+
 function getParabolaTrace(equation) {
   const eq = equation.replace(/\s+/g, '').toLowerCase();
+  // Si la ecuación empieza con "z=", se interpreta en 3D
+  if (eq.startsWith("z=")) {
+    return getParabolaTrace3D(equation);
+  }
+  // Formato esperado: y=ax^2+bx+c
   const regex = /^y=([+-]?[\d.]*)x\^2(?:([+-][\d.]+)x)?(?:([+-][\d.]+))?$/;
   const match = eq.match(regex);
   
@@ -104,20 +178,81 @@ function getParabolaTrace(equation) {
   };
 }
 
+function getParabolaTrace3D(equation) {
+  const eq = equation.replace(/\s+/g, '').toLowerCase();
+  // Formato esperado: z=ax^2+bx+c
+  const regex = /^z=([+-]?[\d.]*)x\^2(?:([+-][\d.]+)x)?(?:([+-][\d.]+))?$/;
+  const match = eq.match(regex);
+  
+  if (!match) {
+    alert('Formato de parábola 3D inválido. Usa el formato: z=ax^2+bx+c');
+    return null;
+  }
+  
+  let aStr = match[1], bStr = match[2], cStr = match[3];
+  let a = (aStr === '' || aStr === '+') ? 1 : (aStr === '-') ? -1 : parseFloat(aStr);
+  let b = bStr ? parseFloat(bStr) : 0;
+  let c = cStr ? parseFloat(cStr) : 0;
+  
+  const xValues = [];
+  const zValues = [];
+  const numPoints = 100;
+  for (let i = 0; i <= numPoints; i++) {
+    let x = -10 + (20 * i / numPoints);
+    xValues.push(x);
+    zValues.push(a * x * x + b * x + c);
+  }
+  
+  // Fijamos y = 0 en todos los puntos (puedes modificarlo si lo requieres)
+  const yValues = new Array(numPoints + 1).fill(0);
+  
+  return {
+    x: xValues,
+    y: yValues,
+    z: zValues,
+    mode: 'lines',
+    name: 'Parábola 3D',
+    type: 'scatter3d',
+    line: { color: '#1d4415', width: 3 }
+  };
+}
+
 /* Funciones para ajuste de mínimos cuadrados a partir de coordenadas ingresadas */
 
 function fitCoordinates(coordsStr) {
-  // Se asume que cada línea tiene una coordenada: x, y, z (separadas por comas o espacios)
   const lines = coordsStr.split('\n').filter(line => line.trim() !== "");
+  if (lines.length === 0) {
+    alert("Por favor, ingresa algunas coordenadas.");
+    return;
+  }
+  
+  let dim = 0;
   let xArr = [], yArr = [], zArr = [];
   
+  // Detectar dimensión y separar datos
   for (let line of lines) {
-    // Reemplaza comas por espacios y separa en partes
     let parts = line.replace(/,/g, ' ').trim().split(/\s+/);
-    if (parts.length < 3) continue; // Se esperan al menos 3 números
-    xArr.push(parseFloat(parts[0]));
-    yArr.push(parseFloat(parts[1]));
-    zArr.push(parseFloat(parts[2]));
+    if (parts.length === 0) continue;
+    if (dim === 0) {
+      // Se establece la dimensión según la primera línea
+      dim = parts.length;
+      if (dim !== 2 && dim !== 3) {
+        alert("Cada línea debe contener 2 (X, Y) o 3 (X, Y, Z) números.");
+        return;
+      }
+    }
+    if (parts.length !== dim) {
+      alert("Todas las líneas deben tener el mismo número de coordenadas.");
+      return;
+    }
+    if (dim === 2) {
+      xArr.push(parseFloat(parts[0]));
+      yArr.push(parseFloat(parts[1]));
+    } else if (dim === 3) {
+      xArr.push(parseFloat(parts[0]));
+      yArr.push(parseFloat(parts[1]));
+      zArr.push(parseFloat(parts[2]));
+    }
   }
   
   if (xArr.length < 2) {
@@ -125,82 +260,138 @@ function fitCoordinates(coordsStr) {
     return;
   }
   
-  // Traza de los datos originales en 3D
-  const dataPoints = {
-    x: xArr,
-    y: yArr,
-    z: zArr,
-    mode: 'markers',
-    name: 'Datos',
-    type: 'scatter3d',
-    marker: { color: 'red', size: 5 }
-  };
-  
-  let traces = [dataPoints];
-  
-  // Ajuste de la curva en 3D
-  // Ajuste lineal: y = a1*x + b1 y z = a2*x + b2
-  const linearCoeffsY = fitLinear(xArr, yArr);
-  const linearCoeffsZ = fitLinear(xArr, zArr);
-  const linearError = error3DLinear(xArr, yArr, zArr, linearCoeffsY, linearCoeffsZ);
-  
-  // Ajuste cuadrático: y = a1*x^2 + b1*x + c1 y z = a2*x^2 + b2*x + c2 (si hay al menos 3 puntos)
-  let quadraticError = Infinity;
-  let quadraticCoeffsY = null, quadraticCoeffsZ = null;
-  if (xArr.length >= 3) {
-    quadraticCoeffsY = fitQuadratic(xArr, yArr);
-    quadraticCoeffsZ = fitQuadratic(xArr, zArr);
-    quadraticError = error3DQuadratic(xArr, yArr, zArr, quadraticCoeffsY, quadraticCoeffsZ);
-  }
-  
-  // Selecciona el modelo con menor error
-  const useLinear = linearError < quadraticError;
-  
-  // Generar la traza del ajuste usando el modelo seleccionado
-  const numPointsFit = 100;
-  let xFit = [];
-  let yFit = [];
-  let zFit = [];
-  const xMin = Math.min(...xArr), xMax = Math.max(...xArr);
-  
-  for (let i = 0; i < numPointsFit; i++) {
-    const xVal = xMin + i * (xMax - xMin) / (numPointsFit - 1);
-    xFit.push(xVal);
-    if (useLinear) {
-      yFit.push(linearCoeffsY.a * xVal + linearCoeffsY.b);
-      zFit.push(linearCoeffsZ.a * xVal + linearCoeffsZ.b);
-    } else {
-      yFit.push(quadraticCoeffsY.a * xVal * xVal + quadraticCoeffsY.b * xVal + quadraticCoeffsY.c);
-      zFit.push(quadraticCoeffsZ.a * xVal * xVal + quadraticCoeffsZ.b * xVal + quadraticCoeffsZ.c);
+  if (dim === 2) {
+    // Graficar en 2D con ajuste de mínimos cuadrados (lineal y cuadrático)
+    const dataPoints = {
+      x: xArr,
+      y: yArr,
+      mode: 'markers',
+      name: 'Datos',
+      type: 'scatter',
+      marker: { color: 'red', size: 5 }
+    };
+    
+    let traces = [dataPoints];
+    
+    // Ajuste lineal: y = a*x + b
+    const linearCoeffs = fitLinear(xArr, yArr);
+    const linearError = errorLinear(xArr, yArr, linearCoeffs);
+    let quadraticError = Infinity;
+    let quadraticCoeffs = null;
+    if (xArr.length >= 3) {
+      quadraticCoeffs = fitQuadratic(xArr, yArr);
+      quadraticError = errorQuadratic(xArr, yArr, quadraticCoeffs);
     }
-  }
-  
-  const fitTrace = {
-    x: xFit,
-    y: yFit,
-    z: zFit,
-    mode: 'lines',
-    name: useLinear ? 'Ajuste Lineal 3D' : 'Ajuste Cuadrático 3D',
-    type: 'scatter3d',
-    line: { color: useLinear ? 'blue' : 'green', width: 3 }
-  };
-  
-  traces.push(fitTrace);
-  
-  const layout = {
-    title: 'Gráfica de Coordenadas en 3D y Ajuste por Mínimos Cuadrados',
-    scene: {
+    
+    const useLinear = linearError < quadraticError;
+    const numPointsFit = 100;
+    let xFit = [];
+    let yFit = [];
+    const xMin = Math.min(...xArr), xMax = Math.max(...xArr);
+    
+    for (let i = 0; i < numPointsFit; i++) {
+      const xVal = xMin + i * (xMax - xMin) / (numPointsFit - 1);
+      xFit.push(xVal);
+      if (useLinear) {
+        yFit.push(linearCoeffs.a * xVal + linearCoeffs.b);
+      } else {
+        yFit.push(quadraticCoeffs.a * xVal * xVal + quadraticCoeffs.b * xVal + quadraticCoeffs.c);
+      }
+    }
+    
+    const fitTrace = {
+      x: xFit,
+      y: yFit,
+      mode: 'lines',
+      name: useLinear ? 'Ajuste Lineal 2D' : 'Ajuste Cuadrático 2D',
+      type: 'scatter',
+      line: { color: useLinear ? 'blue' : 'green', width: 3 }
+    };
+    
+    traces.push(fitTrace);
+    
+    const layout = {
+      title: 'Gráfica de Coordenadas y Ajuste por Mínimos Cuadrados 2D',
       xaxis: { title: 'X', zeroline: true },
       yaxis: { title: 'Y', zeroline: true },
-      zaxis: { title: 'Z', zeroline: true },
-      bgcolor: 'rgba(245,245,245,0.9)'
-    },
-    paper_bgcolor: '#b8cbff'
-  };
-  
-  Plotly.newPlot('plot', traces, layout);
+      plot_bgcolor: 'rgba(245,245,245,0.9)',
+      paper_bgcolor: '#b8cbff'
+    };
+    
+    Plotly.newPlot('plot', traces, layout);
+    
+  } else if (dim === 3) {
+    // Graficar en 3D con ajuste de mínimos cuadrados
+    const dataPoints = {
+      x: xArr,
+      y: yArr,
+      z: zArr,
+      mode: 'markers',
+      name: 'Datos',
+      type: 'scatter3d',
+      marker: { color: 'red', size: 5 }
+    };
+    
+    let traces = [dataPoints];
+    
+    // Ajuste lineal en 3D: se calcula por separado para y y z en función de x
+    const linearCoeffsY = fitLinear(xArr, yArr);
+    const linearCoeffsZ = fitLinear(xArr, zArr);
+    const linearError = error3DLinear(xArr, yArr, zArr, linearCoeffsY, linearCoeffsZ);
+    
+    let quadraticError = Infinity;
+    let quadraticCoeffsY = null, quadraticCoeffsZ = null;
+    if (xArr.length >= 3) {
+      quadraticCoeffsY = fitQuadratic(xArr, yArr);
+      quadraticCoeffsZ = fitQuadratic(xArr, zArr);
+      quadraticError = error3DQuadratic(xArr, yArr, zArr, quadraticCoeffsY, quadraticCoeffsZ);
+    }
+    
+    const useLinear = linearError < quadraticError;
+    const numPointsFit = 100;
+    let xFit = [];
+    let yFit = [];
+    let zFit = [];
+    const xMin = Math.min(...xArr), xMax = Math.max(...xArr);
+    
+    for (let i = 0; i < numPointsFit; i++) {
+      const xVal = xMin + i * (xMax - xMin) / (numPointsFit - 1);
+      xFit.push(xVal);
+      if (useLinear) {
+        yFit.push(linearCoeffsY.a * xVal + linearCoeffsY.b);
+        zFit.push(linearCoeffsZ.a * xVal + linearCoeffsZ.b);
+      } else {
+        yFit.push(quadraticCoeffsY.a * xVal * xVal + quadraticCoeffsY.b * xVal + quadraticCoeffsY.c);
+        zFit.push(quadraticCoeffsZ.a * xVal * xVal + quadraticCoeffsZ.b * xVal + quadraticCoeffsZ.c);
+      }
+    }
+    
+    const fitTrace = {
+      x: xFit,
+      y: yFit,
+      z: zFit,
+      mode: 'lines',
+      name: useLinear ? 'Ajuste Lineal 3D' : 'Ajuste Cuadrático 3D',
+      type: 'scatter3d',
+      line: { color: useLinear ? 'blue' : 'green', width: 3 }
+    };
+    
+    traces.push(fitTrace);
+    
+    const layout = {
+      title: 'Gráfica de Coordenadas en 3D y Ajuste por Mínimos Cuadrados',
+      scene: {
+        xaxis: { title: 'X', zeroline: true },
+        yaxis: { title: 'Y', zeroline: true },
+        zaxis: { title: 'Z', zeroline: true },
+        bgcolor: 'rgba(245,245,245,0.9)'
+      },
+      paper_bgcolor: '#b8cbff'
+    };
+    
+    Plotly.newPlot('plot', traces, layout);
+  }
 }
-
 
 // Ajuste de plano: busca coeficientes a, b y c en z = a*x + b*y + c
 function fitPlane(x, y, z) {
