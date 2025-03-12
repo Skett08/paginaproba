@@ -11,6 +11,8 @@
     <button id="regresar" onclick="location.href='index.html'">Regresar</button>
     
     <div class="container">
+            <!-- Botón de Ayuda -->
+    <button id="ayuda">Ayuda</button>
         <h1>Calculadora de Matrices</h1>
         
         <!-- Controles de dimensión -->
@@ -65,8 +67,6 @@
                 <button onclick="calcularOperacion('inversa')">Inversa</button>
                 <button onclick="calcularOperacion('transpuesta')">Transpuesta</button>
             </div>
-
-
         </div>
 
         <!-- Resultados -->
@@ -76,6 +76,52 @@
             <div id="resultadoTexto"></div>
         </div>
     </div>
+    
+    <!-- Modal de Ayuda -->
+    <div id="ayudaModal">
+      <div id="contenidoAyuda">
+          <span id="cerrarAyuda">&times;</span>
+          <h2>Ayuda - Operaciones con Matrices</h2>
+          <div id="listaAyuda">
+              <div class="formula-item">
+                  <h3>Suma de Matrices</h3>
+                  <div class="descripcion">Se realiza la suma elemento a elemento. Las dos matrices deben tener las mismas dimensiones.</div>
+                  <div class="ejemplo">Ejemplo: Si A = [[1,2],[3,4]] y B = [[5,6],[7,8]], A+B = [[6,8],[10,12]].</div>
+              </div>
+              <div class="formula-item">
+                  <h3>Resta de Matrices</h3>
+                  <div class="descripcion">Se resta elemento a elemento. Las dos matrices deben tener las mismas dimensiones.</div>
+                  <div class="ejemplo">Ejemplo: Si A = [[5,6],[7,8]] y B = [[1,2],[3,4]], A-B = [[4,4],[4,4]].</div>
+              </div>
+              <div class="formula-item">
+                  <h3>Multiplicación de Matrices</h3>
+                  <div class="descripcion">El número de columnas de la primera matriz debe coincidir con el número de filas de la segunda.</div>
+                  <div class="ejemplo">Ejemplo: Si A es 2×3 y B es 3×2, el resultado será una matriz 2×2.</div>
+              </div>
+              <div class="formula-item">
+                  <h3>Multiplicación por Escalar</h3>
+                  <div class="descripcion">Multiplica cada elemento de la matriz por el valor ingresado.</div>
+                  <div class="ejemplo">Ejemplo: Si A = [[1,2],[3,4]] y el escalar es 2, 2A = [[2,4],[6,8]].</div>
+              </div>
+              <div class="formula-item">
+                  <h3>Determinante</h3>
+                  <div class="descripcion">Calcula el determinante de una matriz cuadrada (solo para matrices de hasta 3×3).</div>
+                  <div class="ejemplo">Ejemplo: Para A = [[a,b],[c,d]], det(A) = ad - bc.</div>
+              </div>
+              <div class="formula-item">
+                  <h3>Matriz Inversa</h3>
+                  <div class="descripcion">Calcula la inversa de una matriz cuadrada (disponible solo para matrices 2×2) siempre que el determinante no sea cero.</div>
+                  <div class="ejemplo">Ejemplo: Si A = [[a,b],[c,d]], A⁻¹ = (1/det(A)) * [[d, -b],[-c, a]].</div>
+              </div>
+              <div class="formula-item">
+                  <h3>Transpuesta</h3>
+                  <div class="descripcion">Intercambia filas por columnas en la matriz.</div>
+                  <div class="ejemplo">Ejemplo: La transpuesta de [[1,2],[3,4]] es [[1,3],[2,4]].</div>
+              </div>
+          </div>
+      </div>
+    </div>
+    
     <script src="scriptmatrices.js"></script>
 </body>
 </html>
