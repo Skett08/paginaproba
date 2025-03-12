@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecuaciones de Funciones - FIEX</title>
+  <link rel="stylesheet" href="styleajuste.css">
+  <!-- Se incluye Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <button id="regresar" onclick="window.location.href='index.html'">Regresar</button>
+    <h1>Ecuaciones y Ajuste de Datos</h1>
+    <p>Introduce la ecuación de la recta en formato <code>y=mx+b</code></p>
+    <input id="numeros" type="text" placeholder="y=2x+3">
+    <p>Introduce la función de la parábola en formato <code>y=ax^2+bx+c</code></p>
+    <input id="funcion" type="text" placeholder="y=x^2+2x+1">
+    <p>O ingresa un conjunto de coordenadas (X, Y, Z) (una por línea, separadas por comas o espacios):</p>
+    <textarea id="coordenadas" placeholder="Ejemplo:
+1, 2, 3
+2, 4, 5
+3, 6, 7"></textarea>
+    <button id="graficar">Graficar</button>
+    <div id="plot"></div>
+  </div>
+  <script src="scriptajuste.js"></script>
+</body>
+</html>
