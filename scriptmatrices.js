@@ -44,7 +44,7 @@ const createMatrix = (matrix, editable = false) => {
     return matrix.map((row, i) => `
         <div class="matrix-row">
             ${row.map((val, j) => {
-                // Si es un número, lo formateamos; si no, lo dejamos sin formatear (o lo convertimos a 0)
+                // Si es un número, lo formateamos; si no, lo convertimos a 0
                 const formattedVal = typeof val === 'number' ? val.toFixed(2) : (Number(val) || 0);
                 return `<input type="number" 
                                class="matrix-cell" 
@@ -92,7 +92,6 @@ const matrixOperations = {
             )
         );
     },
-
 
     escalar: (A) => {
         const scalar = parseFloat(prompt('Ingrese el valor escalar:'));
@@ -253,4 +252,29 @@ document.getElementById('fileA').addEventListener('change', (e) => {
 
 document.getElementById('fileB').addEventListener('change', (e) => {
     handleExcelUpload(e.target.files[0], 'gridB', 'filasB', 'columnasB', 'fileBName');
+});
+
+// Modal de Ayuda para Matrices
+document.addEventListener("DOMContentLoaded", () => {
+    const ayudaBtn = document.getElementById("ayuda");
+    const ayudaModal = document.getElementById("ayudaModal");
+    const cerrarAyuda = document.getElementById("cerrarAyuda");
+
+    if (ayudaBtn) {
+        ayudaBtn.addEventListener("click", () => {
+            ayudaModal.style.display = "flex";
+        });
+    }
+
+    if (cerrarAyuda) {
+        cerrarAyuda.addEventListener("click", () => {
+            ayudaModal.style.display = "none";
+        });
+    }
+
+    window.addEventListener("click", (event) => {
+        if (event.target === ayudaModal) {
+            ayudaModal.style.display = "none";
+        }
+    });
 });
