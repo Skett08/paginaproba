@@ -10,74 +10,57 @@ document.addEventListener('DOMContentLoaded', () => {
             California: holtWintersForecast(data.monthly.California, 0.7, 0.6, 0.8, 12, 12)
         };
 
-        // Procesar datos horarios
-        const hourlyData = {
-            Mexico: Object.values(data.hourly.Mexico),
-            Texas: Object.values(data.hourly.Texas),
-            California: Object.values(data.hourly.California)
-        };
-        
-        const hourlyForecast = {
-            Mexico: holtWintersForecast(hourlyData.Mexico, 0.8, 0.5, 0.9, 24, 24),
-            Texas: holtWintersForecast(hourlyData.Texas, 0.8, 0.5, 0.9, 24, 24),
-            California: holtWintersForecast(hourlyData.California, 0.8, 0.5, 0.9, 24, 24)
-        };
-
-        // Crear gráficos
+        // Crear gráfico mensual
         createChart(
             'annualChart',
-            'monthly',
-            data.monthly.labels,  // Etiquetas
-            data.monthly,         // Datos históricos
-            monthlyForecast,      // Pronóstico
+            data.monthly.labels,
+            data.monthly,
+            monthlyForecast,
             ['Mexico', 'Texas', 'California'],
             ['#FF6384', '#36A2EB', '#FFCE56']
-        );
-        
-        createChart(
-            'hourlyChart',
-            'hourly',
-            Object.keys(data.hourly.Mexico),  // Etiquetas horarias
-            hourlyData,          // Datos históricos
-            hourlyForecast,      // Pronóstico
-            ['Mexico', 'Texas', 'California'],
-            ['#FF9F40', '#4BC0C0', '#9966FF']
         );
     })
     .catch(error => console.error('Error:', error));
 });
 
 // Funciones de pronóstico mejoradas
-function holtWintersForecast(data, alpha = 0.8, beta = 0.8, gamma = 0.8, seasonLength = 24, periods = 24) {
-    if (data.length < seasonLength) return new Array(periods).fill(0); // Ajuste para mínimos datos
+function holtWintersForecast(data, alpha = 0.7, beta = 0.6, gamma = 0.8, seasonLength = 12, periods = 12) {
+    if (data.length < seasonLength) return new Array(periods).fill(0);
     
-    // Inicialización mejorada
-    const seasons = Math.ceil(data.length / seasonLength);
-    const seasonalIndices = Array.from({length: seasonLength}, (_, i) => {
-        const seasonVals = [];
-        for (let j = 0; j < seasons; j++) {
-            const idx = j * seasonLength + i;
-            if (idx < data.length) seasonVals.push(data[idx]);
-        }
-        return seasonVals.length > 0 ? seasonVals.reduce((a, b) => a + b, 0) / seasonVals.length : 1;
+    // Mejor inicialización para datos con exactamente 1 temporada completa
+    const initialLevel = data.slice(0, seasonLength).reduce((a, b) => a + b, 0) / seasonLength;
+    
+    // Cálculo mejorado de la tendencia inicial
+    const initialTrend = (data[seasonLength - 1] - data[0]) / (seasonLength - 1);
+    
+    // Inicialización de componentes
+    let level = initialLevel;
+    let trend = initialTrend;
+    
+    // Inicialización estacional mejorada
+    const seasonalIndices = data.slice(0, seasonLength).map((val, i) => {
+        return val / (level + (i * trend));
     });
 
-    let level = data[0];
-    let trend = data.length > seasonLength ? (data[seasonLength] - data[0]) / seasonLength : 0;
-
-    // Suavizado
+    // Suavizado ajustado
     for (let t = 0; t < data.length; t++) {
         const seasonIndex = t % seasonLength;
         const prevLevel = level;
-        level = alpha * (data[t] - seasonalIndices[seasonIndex]) + (1 - alpha) * (level + trend);
+        
+        // Componente de nivel con ajuste estacional
+        level = alpha * (data[t] / seasonalIndices[seasonIndex]) + (1 - alpha) * (level + trend);
+        
+        // Componente de tendencia
         trend = beta * (level - prevLevel) + (1 - beta) * trend;
-        seasonalIndices[seasonIndex] = gamma * (data[t] - level) + (1 - gamma) * seasonalIndices[seasonIndex];
+        
+        // Componente estacional
+        seasonalIndices[seasonIndex] = gamma * (data[t] / (prevLevel + trend)) + (1 - gamma) * seasonalIndices[seasonIndex];
     }
 
-    // Pronóstico
+    // Pronóstico con suavizado final
     return Array.from({length: periods}, (_, i) => {
         const seasonIndex = (data.length + i) % seasonLength;
-        return Math.round(level + (i + 1) * trend + seasonalIndices[seasonIndex]);
+        return Math.round((level + (i + 1) * trend) * seasonalIndices[seasonIndex]);
     });
 }
 
@@ -91,7 +74,7 @@ function generateForecastLabels(lastLabel) {
     const startYear = parseInt(yearStr);
     
     return Array.from({length: 12}, (_, i) => {
-        const date = new Date(startYear, startMonth + i + 1, 1);
+        const date = new Date(startYear, startMonth + i, 1); // Corregido el índice
         return `${months[date.getMonth()]} ${date.getFullYear()}`;
     });
 }
@@ -149,39 +132,42 @@ function createContinuousTraces(name, historicalData, forecastData, color, label
 }
 
 // Función para crear gráficos
-function createChart(containerId, type, labels, historicalData, forecastData, regions, colors) {
-    const forecastLabels = type === 'monthly'
-        ? generateForecastLabels(labels.slice(-1)[0])
-        : generateHourlyForecastLabels(labels.slice(-1)[0]);
-
+function createChart(containerId, labels, historicalData, forecastData, regions, colors) {
+    const forecastLabels = generateForecastLabels(labels.slice(-1)[0]);
     const fullLabels = [...labels, ...forecastLabels];
 
     const traces = regions.flatMap((region, i) => {
         const historicalValues = historicalData[region];
         const forecastValues = forecastData[region];
         
+        // Obtener el último valor histórico para conectar con el pronóstico
+        const lastHistoricalValue = historicalValues[historicalValues.length - 1];
+
+                // Suavizar transición entre último dato real y primer pronóstico
+                const transitionValue = (historicalValues[historicalValues.length - 1] + forecastValues[0]) / 2;
+        
         return [
             {
                 name: region,
-                x: fullLabels,
-                y: [...historicalValues, ...new Array(forecastLabels.length).fill(null)],
+                x: labels,
+                y: historicalValues,
                 mode: 'lines+markers',
                 line: {color: colors[i], width: 2},
-                marker: {size: 4}
+                marker: {size: 6}
             },
             {
                 name: `${region} (Pronóstico)`,
-                x: fullLabels,
-                y: [...new Array(historicalValues.length).fill(null), ...forecastValues],
+                x: [labels[labels.length - 1], ...forecastLabels],
+                y: [lastHistoricalValue, ...forecastValues],
                 mode: 'lines+markers',
                 line: {color: colors[i], width: 2, dash: 'dot'},
-                marker: {symbol: 'triangle-right', size: 5}
+                marker: {symbol: 'triangle-right', size: 6}
             }
         ];
     });
 
     const layout = {
-        title: `Demanda ${type === 'monthly' ? 'Mensual' : 'Horaria'}`,
+        title: 'Demanda Mensual',
         xaxis: {
             type: 'category',
             tickangle: -45,
