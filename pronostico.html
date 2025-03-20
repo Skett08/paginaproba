@@ -4,16 +4,34 @@
   <meta charset="UTF-8">
   <title>Demanda Eléctrica - Pronóstico</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="stylepronostico.css">
 </head>
 <body>
 
-<!-- Gráfica Mensual -->
-<div class="chart-container">
-  <h2>PRONÓSTICO DE DEMANDA MENSUAL</h2>
-  <div id="annualChart" style="width: 100%; height: 500px;"></div>
-</div>
+  <!-- Contenedor principal ajustado a tus estilos existentes -->
+  <div class="container">
+    
+    <!-- Gráfica más prominente -->
+    <div class="chart-container" style="margin-bottom: 40px;">
+      <h2>PRONÓSTICO DE DEMANDA MENSUAL</h2>
+      <div id="annualChart" style="width: 100%; height: 600px;"></div> <!-- Altura aumentada -->
+    </div>
 
-<script src="scriptpronostico.js"></script>
+    <!-- Sección de carga manteniendo tus estilos -->
+    <div class="upload-container">
+      <h2>Sube tus archivos Excel</h2>
+      <p>Selecciona uno o varios archivos para comparar los datos de demanda eléctrica.</p>
+      <label for="excelFileInput" class="upload-btn">
+        <span class="btn-icon">📁</span>
+        Seleccionar Archivos
+      </label>
+      <input type="file" id="excelFileInput" multiple accept=".xlsx, .xls" hidden>
+      <div class="file-list" id="fileList"></div>
+    </div>
+
+  </div>
+
+  <script src="scriptpronostico.js"></script>
 </body>
 </html>

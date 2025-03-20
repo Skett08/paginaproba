@@ -23,6 +23,83 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(error => console.error('Error:', error));
 });
 
+document.getElementById('excelFileInput').addEventListener('change', handleFileSelect);
+
+const datasets = []; // Aquí almacenaremos los datos de cada archivo
+
+function handleFileSelect(event) {
+    const files = event.target.files;
+    const promises = [];
+
+    for (let i = 0; i < files.length; i++) {
+        promises.push(readExcelFile(files[i]));
+    }
+
+    Promise.all(promises)
+      .then(results => {
+          // Aquí results es un arreglo con los datos extraídos de cada archivo
+          // Suponiendo que cada Excel tenga columnas, por ejemplo, "Fecha" y "Demanda"
+          results.forEach(result => datasets.push(result));
+
+          // Puedes combinar o comparar los datos y luego llamar a tu función para crear la gráfica
+          // Por ejemplo, podrías crear una gráfica para cada archivo o una única gráfica con varias trazas.
+          createComparativeChart(datasets);
+      })
+      .catch(error => console.error('Error al leer los archivos Excel:', error));
+}
+
+function readExcelFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: 'binary' });
+            // Asumamos que los datos están en la primera hoja
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            // Convertir la hoja a JSON (cada objeto corresponde a una fila)
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: null });
+            // Se espera que el Excel tenga columnas "Fecha" y "Demanda"
+            // Puedes hacer ajustes según el formato de tus archivos
+            const fechas = jsonData.map(row => row.Fecha);
+            const demandas = jsonData.map(row => row.Demanda);
+            resolve({ fechas, demandas, fileName: file.name });
+        };
+        reader.onerror = function(error) {
+            reject(error);
+        };
+        reader.readAsBinaryString(file);
+    });
+}
+
+function createComparativeChart(datasets) {
+    // Para cada dataset, se creará una traza en la gráfica
+    const traces = datasets.map((dataSet, index) => {
+        return {
+            name: dataSet.fileName,
+            x: dataSet.fechas, // Si las fechas están en formato mes, se usarán como etiquetas
+            y: dataSet.demandas,
+            mode: 'lines+markers',
+            line: { width: 2 },
+            marker: { size: 6 }
+        };
+    });
+
+    const layout = {
+        title: 'Comparación de Demanda Eléctrica',
+        xaxis: {
+            title: 'Fecha',
+            tickangle: -45,
+            type: 'category'
+        },
+        yaxis: { title: 'MW/h' },
+        legend: { orientation: 'h', y: -0.2 },
+        margin: { t: 40, b: 100 }
+    };
+
+    Plotly.newPlot('annualChart', traces, layout);
+}
+
 // Funciones de pronóstico mejoradas
 function holtWintersForecast(data, alpha = 0.7, beta = 0.6, gamma = 0.8, seasonLength = 12, periods = 12) {
     if (data.length < seasonLength) return new Array(periods).fill(0);

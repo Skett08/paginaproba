@@ -144,3 +144,109 @@ canvas {
     box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
     border-radius: 4px !important;
 }
+
+/* Contenedor para la carga de archivos */
+.upload-container {
+    text-align: center;
+    margin: 20px auto;
+    background: rgb(245, 245, 245);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(51, 139, 19, 0.605);
+    width: 90%;
+    max-width: 800px;
+}
+
+/* Título y texto descriptivo */
+.upload-container h2 {
+    color: #2d6620;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.upload-container p {
+    font-size: 16px;
+    color: #000000;
+    margin: 10px 0;
+}
+
+/* Botón para subir archivos */
+.upload-container .upload-btn {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgb(28, 167, 49);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-container .upload-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #003f80);
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(0, 123, 255, 0.6);
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Gráfica más grande */
+  .chart-container {
+    width: 95% !important; /* Sobreescribe el 90% original */
+    max-width: 100% !important;
+    margin: 20px auto 40px !important;
+  }
+  
+  #annualChart {
+    height: 650px !important; /* Altura aumentada */
+    transition: height 0.3s ease;
+  }
+  
+  /* Mejoras en la sección de carga */
+  .upload-container {
+    margin: 40px auto;
+    padding: 25px;
+    width: 95%;
+    max-width: 900px;
+  }
+  
+  .upload-btn {
+    padding: 16px 32px;
+    font-size: 1.1em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  /* Efectos hover mejorados */
+  .upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(28, 167, 49, 0.4) !important;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    #annualChart {
+      height: 450px !important;
+    }
+    
+    .chart-container {
+      width: 100% !important;
+      padding: 10px !important;
+    }
+    
+    .upload-container {
+      margin: 20px auto;
+      padding: 15px;
+    }
+  }
