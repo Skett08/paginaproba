@@ -54,7 +54,7 @@ function populateMonthFilter(labels) {
 document.getElementById('monthFilter').addEventListener('change', (e) => {
     const value = e.target.value;
     if (value === "all") {
-        // Mostrar vista anual
+        // Mostrar vista anual con datos mensuales y pronóstico mensual
         createChart(
             'annualChart',
             window.historicalData.labels,
@@ -64,7 +64,7 @@ document.getElementById('monthFilter').addEventListener('change', (e) => {
             window.colors
         );
     } else {
-        // Mostrar vista diaria para el mes seleccionado
+        // Mostrar vista diaria con pronóstico para el mes seleccionado
         createMonthlyChart(
             'annualChart',
             window.historicalData.labels,
@@ -80,39 +80,102 @@ function handleFileSelect(event) {
     const files = event.target.files;
     const promises = [];
 
-    for (let i = 0; i < files.length; i++) {
+    for (let i = 0; i < files.length && i < 2; i++) {
         promises.push(readExcelFile(files[i]));
     }
 
     Promise.all(promises)
-      .then(results => {
-          // Aquí results es un arreglo con los datos extraídos de cada archivo
-          // Suponiendo que cada Excel tenga columnas, por ejemplo, "Fecha" y "Demanda"
-          results.forEach(result => datasets.push(result));
+        .then(results => {
+            datasets.length = 0;
+            results.forEach(result => datasets.push(result));
 
-          // Puedes combinar o comparar los datos y luego llamar a tu función para crear la gráfica
-          // Por ejemplo, podrías crear una gráfica para cada archivo o una única gráfica con varias trazas.
-          createComparativeChart(datasets);
-      })
-      .catch(error => console.error('Error al leer los archivos Excel:', error));
+            // Filtrar archivos horarios
+            const hourlyDatasets = results.filter(result => 
+                result.isHourly || 
+                (result.fechas[0] && String(result.fechas[0]).includes(':'))
+            );
+
+            if (hourlyDatasets.length > 0) {
+                createHourlyChart('annualChart', hourlyDatasets.slice(0, 2));
+            } else {
+                createComparativeChart(datasets);
+            }
+        })
+        .catch(error => console.error('Error al leer los archivos Excel:', error));
 }
+
 
 function readExcelFile(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = function(e) {
             const data = e.target.result;
-            const workbook = XLSX.read(data, { type: 'binary' });
-            // Asumamos que los datos están en la primera hoja
+            const workbook = XLSX.read(data, { type: "binary", cellDates: true, raw: false });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-            // Convertir la hoja a JSON (cada objeto corresponde a una fila)
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: null });
-            // Se espera que el Excel tenga columnas "Fecha" y "Demanda"
-            // Puedes hacer ajustes según el formato de tus archivos
-            const fechas = jsonData.map(row => row.Fecha);
-            const demandas = jsonData.map(row => row.Demanda);
-            resolve({ fechas, demandas, fileName: file.name });
+
+            if (!jsonData || jsonData.length === 0) {
+                return reject("No se encontraron datos en el archivo");
+            }
+
+            // Determinar si son datos horarios
+            const firstDate = jsonData[0].Fecha;
+            let isHourly = false;
+
+            // Caso 1: Fecha es número (Excel)
+            if (typeof firstDate === 'number') {
+                isHourly = firstDate < 1; // Números <1 son horas (ej: 0.5 = 12:00)
+            }
+            // Caso 2: Fecha es texto con formato HH:MM
+            else if (typeof firstDate === 'string' && firstDate.includes(':')) {
+                isHourly = true;
+            }
+            // Caso 3: Fecha es objeto Date (ej: 1899-12-31 01:00)
+            else if (firstDate instanceof Date) {
+                const year = firstDate.getFullYear();
+                isHourly = year === 1899 || year === 1900; // Fechas antiguas son horas
+            }
+
+            // Convertir fechas
+            const fechas = jsonData.map(row => {
+                const fecha = row.Fecha;
+
+                // Caso 1: Hora como número (ej: 0.041666666666666664 = 01:00)
+                if (typeof fecha === 'number') {
+                    if (isHourly) {
+                        const hours = Math.floor(fecha * 24);
+                        const minutes = Math.round((fecha * 24 - hours) * 60);
+                        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    } else {
+                        const date = XLSX.SSF.parse_date_code(fecha);
+                        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                        return `${monthNames[date.m - 1]} ${date.y}`;
+                    }
+                }
+                // Caso 2: Fecha como objeto Date
+                else if (fecha instanceof Date) {
+                    if (isHourly) {
+                        return `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
+                    } else {
+                        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                        return `${monthNames[fecha.getMonth()]} ${fecha.getFullYear()}`;
+                    }
+                }
+                // Caso 3: Fecha como string
+                else {
+                    return isHourly 
+                        ? String(fecha).split(' ')[1] // Extraer solo la hora (ej: "1899-12-31 01:00" → "01:00")
+                        : String(fecha); // Mantener texto completo para meses
+                }
+            });
+
+            // Filtrar demandas válidas
+            const demandas = jsonData.map(row => Number(row.Demanda)).filter(d => !isNaN(d));
+
+            resolve({ fechas, demandas, fileName: file.name, isHourly });
         };
         reader.onerror = function(error) {
             reject(error);
@@ -122,27 +185,51 @@ function readExcelFile(file) {
 }
 
 function createComparativeChart(datasets) {
-    // Para cada dataset, se creará una traza en la gráfica
-    const traces = datasets.map((dataSet, index) => {
-        return {
-            name: dataSet.fileName,
-            x: dataSet.fechas, // Si las fechas están en formato mes, se usarán como etiquetas
-            y: dataSet.demandas,
-            mode: 'lines+markers',
-            line: { width: 2 },
-            marker: { size: 6 }
-        };
+    const traces = datasets.flatMap((dataSet, index) => {
+        const fechas = dataSet.fechas;
+        const demandas = dataSet.demandas.filter(d => d !== null); // Filtrar nulls
+        const color = `hsl(${index * 120}, 70%, 50%)`;
+
+        // Validar datos antes de pronosticar
+        if (demandas.length < 2) return []; // No hay suficientes datos
+
+        const forecastValues = holtWintersForecast(demandas, 0.7, 0.6, 0.8, 12, 3);
+        const forecastLabels = generateForecastLabels(fechas[fechas.length - 1], 3);
+
+        // Conectar histórico y pronóstico
+        const connectedFechas = [fechas[fechas.length - 1], ...forecastLabels];
+        const connectedDemandas = [demandas[demandas.length - 1], ...forecastValues];
+
+        return [
+            {
+                name: `${dataSet.fileName} (Histórico)`,
+                x: fechas,
+                y: demandas,
+                mode: 'lines+markers',
+                line: { color: color, width: 2 },
+                marker: { size: 6 }
+            },
+            {
+                name: `${dataSet.fileName} (Pronóstico)`,
+                x: connectedFechas,
+                y: connectedDemandas,
+                mode: 'lines+markers',
+                line: { color: color, width: 2, dash: 'dot' },
+                marker: { symbol: 'triangle-right', size: 6 }
+            }
+        ];
     });
 
     const layout = {
-        title: 'Comparación de Demanda Eléctrica',
-        xaxis: {
+        title: 'Comparación de Demanda Mensual con Pronóstico',
+        xaxis: { 
             title: 'Fecha',
             tickangle: -45,
-            type: 'category'
+            type: 'category',
+            automargin: true
         },
         yaxis: { title: 'MW/h' },
-        legend: { orientation: 'h', y: -0.2 },
+        legend: { orientation: 'h', y: -0.3 },
         margin: { t: 40, b: 100 }
     };
 
@@ -150,18 +237,17 @@ function createComparativeChart(datasets) {
 }
 
 // Funciones de pronóstico mejoradas
-function holtWintersForecast(data, alpha = 0.7, beta = 0.6, gamma = 0.8, seasonLength = 12, periods = 12) {
-    if (data.length < seasonLength) return new Array(periods).fill(0);
+function holtWintersForecast(data, alpha = 0.7, beta = 0.6, gamma = 0.8, seasonLength = 12, periods = 3) {
+    if (data.length === 0) return [];
+    seasonLength = Math.min(seasonLength, data.length);
     
-    const initialLevel = data.slice(0, seasonLength).reduce((a, b) => a + b, 0) / seasonLength;
-    const initialTrend = (data[seasonLength - 1] - data[0]) / (seasonLength - 1);
-    let level = initialLevel;
-    let trend = initialTrend;
+    // Inicializar nivel y tendencia
+    let level = data.slice(0, seasonLength).reduce((a, b) => a + b, 0) / seasonLength;
+    let trend = seasonLength > 1 ? (data[seasonLength - 1] - data[0]) / (seasonLength - 1) : 0;
     
-    const seasonalIndices = data.slice(0, seasonLength).map((val, i) => {
-        return val / (level + (i * trend));
-    });
-    
+    const seasonalIndices = data.slice(0, seasonLength).map((val, i) => val / (level + (i * trend)));
+
+    // Suavizar componentes
     for (let t = 0; t < data.length; t++) {
         const seasonIndex = t % seasonLength;
         const prevLevel = level;
@@ -170,13 +256,14 @@ function holtWintersForecast(data, alpha = 0.7, beta = 0.6, gamma = 0.8, seasonL
         seasonalIndices[seasonIndex] = gamma * (data[t] / (prevLevel + trend)) + (1 - gamma) * seasonalIndices[seasonIndex];
     }
     
+    // Generar pronóstico
     return Array.from({length: periods}, (_, i) => {
         const seasonIndex = (data.length + i) % seasonLength;
         return Math.round((level + (i + 1) * trend) * seasonalIndices[seasonIndex]);
     });
 }
 
-function generateForecastLabels(lastLabel) {
+function generateForecastLabels(lastLabel, periods = 3) {
     const [monthStr, yearStr] = lastLabel.split(' ');
     const months = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -185,21 +272,85 @@ function generateForecastLabels(lastLabel) {
     const startMonth = months.indexOf(monthStr);
     const startYear = parseInt(yearStr);
     
-    return Array.from({length: 12}, (_, i) => {
-        const date = new Date(startYear, startMonth + i, 1);
+    return Array.from({length: periods}, (_, i) => {
+        const date = new Date(startYear, startMonth + i + 1, 1);
+        // Manejar cambio de año
         return `${months[date.getMonth()]} ${date.getFullYear()}`;
     });
 }
 
 
 // Generación de etiquetas para pronósticos horarios
-function generateHourlyForecastLabels(lastHour) {
-    const [lastH] = lastHour.split(':');
-    let currentHour = parseInt(lastH);
-    return Array.from({length: 24}, (_, i) => {
-        currentHour = (currentHour % 24) + 1;
-        return `${currentHour.toString().padStart(2, '0')}:00`;
+function generateHourlyForecastLabels(lastHour, forecastCount) {
+    const [lastH, lastM] = lastHour.split(':').map(Number);
+    let currentHour = lastH;
+    let currentMinute = lastM;
+    
+    return Array.from({length: forecastCount}, () => {
+        currentHour += 1;
+        if (currentHour >= 24) {
+            currentHour = 0; // Reiniciar a 00 después de las 23:00
+        }
+        return `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
     });
+}
+
+
+function createHourlyChart(containerId, datasets) {
+    const traces = [];
+    const colors = ['#36A2EB', '#FF6384']; // Colores distintos para cada archivo
+
+    datasets.forEach((dataSet, index) => {
+        const hours = dataSet.fechas;
+        const values = dataSet.demandas;
+        const currentHours = hours.length;
+        const forecastHorizon = 24 - currentHours;
+
+        // Datos históricos
+        traces.push({
+            name: `${dataSet.fileName} (Histórico)`,
+            x: hours,
+            y: values,
+            mode: 'lines+markers',
+            line: { color: colors[index], width: 2 },
+            marker: { size: 6 }
+        });
+
+        // Traza de pronóstico (si hay horas faltantes)
+        if (forecastHorizon > 0) {
+            const seasonLength = currentHours < 24 ? currentHours : 24;
+            const forecastValues = holtWintersForecast(values, 0.8, 0.5, 0.9, seasonLength, forecastHorizon);
+            const forecastHours = generateHourlyForecastLabels(hours[hours.length - 1], forecastHorizon);
+
+            // Conectar el último punto histórico con el primer pronóstico
+            const connectedForecastHours = [hours[hours.length - 1], ...forecastHours];
+            const connectedForecastValues = [values[values.length - 1], ...forecastValues];
+
+            traces.push({
+                name: `${dataSet.fileName} (Pronóstico)`,
+                x: connectedForecastHours,
+                y: connectedForecastValues,
+                mode: 'lines+markers',
+                line: { color: colors[index], width: 2, dash: 'dot' },
+                marker: { symbol: 'triangle-right', size: 6 }
+            });
+        }
+    });
+
+    const layout = {
+        title: `Comparación de demanda horaria${datasets.length > 1 ? ' - 2 archivos' : ''}`,
+        xaxis: {
+            title: 'Hora del día',
+            range: ['00:00', '23:59'],
+            tickmode: 'array',
+            tickvals: Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`)
+        },
+        yaxis: { title: 'MW/h' },
+        showlegend: true,
+        legend: { orientation: 'h', y: -0.3 }
+    };
+
+    Plotly.newPlot(containerId, traces, layout);
 }
 
 // Configuración común para gráficos
@@ -287,31 +438,63 @@ function createChart(containerId, labels, historicalData, forecastData, regions,
 }
 
 function createMonthlyChart(containerId, labels, historicalData, regions, colors, monthIndex) {
-    // Se obtiene la etiqueta del mes seleccionado
+    // Obtiene la etiqueta del mes seleccionado (ej. "Marzo 2024")
     const selectedLabel = labels[monthIndex];
+    // Calcula el total de días en el mes
+    const totalDaysInMonth = getDaysInMonth(selectedLabel);
+    const traces = [];
     
-    // Crear trazas usando los datos diarios almacenados en window.allData
-    const traces = regions.map((region, i) => {
-        // Se asume que en el JSON, los datos diarios están en la clave "Diario <region>"
+    regions.forEach((region, i) => {
+        // Se asume que los datos diarios están en "Diario <region>"
         const dailyKey = "Diario " + region;
         const dailyData = window.allData[dailyKey] ? window.allData[dailyKey][selectedLabel] : [];
+        if (!dailyData || dailyData.length === 0) return; // Si no hay datos, salta la región
         
-        // Generar etiquetas para cada día (1, 2, 3, ... según la longitud del array)
-        const days = dailyData.map((_, j) => j + 1);
+        const currentDays = dailyData.length; // Días históricos disponibles
+        const historicalDays = Array.from({ length: currentDays }, (_, j) => j + 1);
         
-        return {
-            name: region,
-            x: days,
+        // Determina cuántos días faltan en el mes
+        const forecastHorizon = totalDaysInMonth - currentDays;
+        let forecastDays = [];
+        let forecastValues = [];
+        
+        if (forecastHorizon > 0) {
+            // Se pronostica solo para los días que faltan (sin duplicar el último histórico)
+            const seasonLength = 7;  // Estacionalidad semanal
+            forecastValues = holtWintersForecast(dailyData, 0.7, 0.6, 0.8, seasonLength, forecastHorizon);
+            forecastDays = Array.from({ length: forecastHorizon }, (_, j) => currentDays + j + 1);
+        }
+        
+        // Traza de datos históricos
+        traces.push({
+            name: region + " (Histórico)",
+            x: historicalDays,
             y: dailyData,
             mode: 'lines+markers',
             line: { color: colors[i], width: 2 },
             marker: { size: 6 }
-        };
+        });
+        
+        // Traza del pronóstico (solo si hay días faltantes)
+        if (forecastHorizon > 0) {
+            traces.push({
+                name: region + " (Pronóstico)",
+                x: forecastDays,
+                y: forecastValues,
+                mode: 'lines+markers',
+                line: { color: colors[i], width: 2, dash: 'dot' },
+                marker: { symbol: 'triangle-right', size: 6 }
+            });
+        }
     });
     
     const layout = {
-        title: `Demanda diaria para ${selectedLabel}`,
-        xaxis: { title: 'Día del mes' },
+        title: `Demanda diaria y pronóstico para ${selectedLabel}`,
+        xaxis: {
+            title: 'Día del mes',
+            dtick: 1,
+            range: [1, totalDaysInMonth]
+        },
         yaxis: { title: 'MW/h' },
         showlegend: true
     };
@@ -341,3 +524,23 @@ const createTraces = (name, data, forecast, color, isHourly) => {
     ];
 };
 
+function getDaysInMonth(label) {
+    const [monthStr, yearStr] = label.split(' ');
+    const months = {
+       'Enero': 0,
+       'Febrero': 1,
+       'Marzo': 2,
+       'Abril': 3,
+       'Mayo': 4,
+       'Junio': 5,
+       'Julio': 6,
+       'Agosto': 7,
+       'Septiembre': 8,
+       'Octubre': 9,
+       'Noviembre': 10,
+       'Diciembre': 11
+    };
+    const month = months[monthStr];
+    const year = parseInt(yearStr);
+    return new Date(year, month + 1, 0).getDate();
+}

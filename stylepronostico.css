@@ -1,5 +1,3 @@
-/* styleelectricidad.css */
-
 body {
     font-family: Arial, sans-serif;
     background-color: #b8cbff;
@@ -13,7 +11,6 @@ body {
     overflow-y: auto;
 }
 
-/* Contenedor principal para centralizar el contenido */
 .container {
     width: 100%;
     max-width: 900px;
@@ -24,7 +21,6 @@ body {
     margin: 20px auto;
 }
 
-/* Estilos para los contenedores de gráficos */
 .chart-container {
     text-align: center;
     background: rgb(245, 245, 245);
@@ -36,7 +32,7 @@ body {
 
 
 .chart-container h2 {
-    color: #2d6620; /* Color verde oscuro del ejemplo */
+    color: #2d6620;
     margin-bottom: 25px;
     font-size: 1.8em;
     text-transform: uppercase;
