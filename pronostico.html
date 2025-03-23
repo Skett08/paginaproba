@@ -9,16 +9,23 @@
 </head>
 <body>
 
-  <!-- Contenedor principal ajustado a tus estilos existentes -->
   <div class="container">
-    
-    <!-- Gráfica más prominente -->
-    <div class="chart-container" style="margin-bottom: 40px;">
-      <h2>PRONÓSTICO DE DEMANDA MENSUAL</h2>
-      <div id="annualChart" style="width: 100%; height: 600px;"></div> <!-- Altura aumentada -->
+    <!-- Filtro para cambiar de vista -->
+    <div class="filter-container" style="text-align:center; margin-bottom:20px;">
+      <label for="monthFilter">Filtrar por mes:</label>
+      <select id="monthFilter">
+        <option value="all">Todos los meses</option>
+        <!-- Las opciones se agregarán dinámicamente desde JS -->
+      </select>
     </div>
 
-    <!-- Sección de carga manteniendo tus estilos -->
+    <!-- Gráfica principal -->
+    <div class="chart-container" style="margin-bottom: 40px;">
+      <h2>PRONÓSTICO DE DEMANDA MENSUAL</h2>
+      <div id="annualChart" style="width: 100%; height: 600px;"></div>
+    </div>
+
+    <!-- Sección de carga de archivos -->
     <div class="upload-container">
       <h2>Sube tus archivos Excel</h2>
       <p>Selecciona uno o varios archivos para comparar los datos de demanda eléctrica.</p>
@@ -29,7 +36,6 @@
       <input type="file" id="excelFileInput" multiple accept=".xlsx, .xls" hidden>
       <div class="file-list" id="fileList"></div>
     </div>
-
   </div>
 
   <script src="scriptpronostico.js"></script>

@@ -3,21 +3,33 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('datos.json')
     .then(r => r.json())
     .then(data => {
-        // Procesar datos mensuales
+        // Guardar todos los datos globalmente para acceder a las series diarias
+        window.allData = data;
+
+        // Procesar datos mensuales y calcular pronósticos
         const monthlyForecast = {
             Mexico: holtWintersForecast(data.monthly.Mexico, 0.7, 0.6, 0.8, 12, 12),
             Texas: holtWintersForecast(data.monthly.Texas, 0.7, 0.6, 0.8, 12, 12),
             California: holtWintersForecast(data.monthly.California, 0.7, 0.6, 0.8, 12, 12)
         };
 
-        // Crear gráfico mensual
+        // Guardar datos en variables globales para reutilizarlos en el filtro
+        window.forecastData = monthlyForecast;
+        window.historicalData = data.monthly;
+        window.regions = ['Mexico', 'Texas', 'California'];
+        window.colors = ['#FF6384', '#36A2EB', '#FFCE56'];
+
+        // Poblar el menú desplegable con las etiquetas de meses
+        populateMonthFilter(data.monthly.labels);
+
+        // Crear la gráfica anual por defecto
         createChart(
             'annualChart',
             data.monthly.labels,
             data.monthly,
             monthlyForecast,
-            ['Mexico', 'Texas', 'California'],
-            ['#FF6384', '#36A2EB', '#FFCE56']
+            window.regions,
+            window.colors
         );
     })
     .catch(error => console.error('Error:', error));
@@ -26,6 +38,43 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('excelFileInput').addEventListener('change', handleFileSelect);
 
 const datasets = []; // Aquí almacenaremos los datos de cada archivo
+
+function populateMonthFilter(labels) {
+    const select = document.getElementById('monthFilter');
+    // Limpia opciones previas (si las hubiera)
+    select.innerHTML = '<option value="all">Todos los meses</option>';
+    labels.forEach((label, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = label;
+        select.appendChild(option);
+    });
+}
+
+document.getElementById('monthFilter').addEventListener('change', (e) => {
+    const value = e.target.value;
+    if (value === "all") {
+        // Mostrar vista anual
+        createChart(
+            'annualChart',
+            window.historicalData.labels,
+            window.historicalData,
+            window.forecastData,
+            window.regions,
+            window.colors
+        );
+    } else {
+        // Mostrar vista diaria para el mes seleccionado
+        createMonthlyChart(
+            'annualChart',
+            window.historicalData.labels,
+            window.historicalData,
+            window.regions,
+            window.colors,
+            parseInt(value)
+        );
+    }
+});
 
 function handleFileSelect(event) {
     const files = event.target.files;
@@ -104,37 +153,23 @@ function createComparativeChart(datasets) {
 function holtWintersForecast(data, alpha = 0.7, beta = 0.6, gamma = 0.8, seasonLength = 12, periods = 12) {
     if (data.length < seasonLength) return new Array(periods).fill(0);
     
-    // Mejor inicialización para datos con exactamente 1 temporada completa
     const initialLevel = data.slice(0, seasonLength).reduce((a, b) => a + b, 0) / seasonLength;
-    
-    // Cálculo mejorado de la tendencia inicial
     const initialTrend = (data[seasonLength - 1] - data[0]) / (seasonLength - 1);
-    
-    // Inicialización de componentes
     let level = initialLevel;
     let trend = initialTrend;
     
-    // Inicialización estacional mejorada
     const seasonalIndices = data.slice(0, seasonLength).map((val, i) => {
         return val / (level + (i * trend));
     });
-
-    // Suavizado ajustado
+    
     for (let t = 0; t < data.length; t++) {
         const seasonIndex = t % seasonLength;
         const prevLevel = level;
-        
-        // Componente de nivel con ajuste estacional
         level = alpha * (data[t] / seasonalIndices[seasonIndex]) + (1 - alpha) * (level + trend);
-        
-        // Componente de tendencia
         trend = beta * (level - prevLevel) + (1 - beta) * trend;
-        
-        // Componente estacional
         seasonalIndices[seasonIndex] = gamma * (data[t] / (prevLevel + trend)) + (1 - gamma) * seasonalIndices[seasonIndex];
     }
-
-    // Pronóstico con suavizado final
+    
     return Array.from({length: periods}, (_, i) => {
         const seasonIndex = (data.length + i) % seasonLength;
         return Math.round((level + (i + 1) * trend) * seasonalIndices[seasonIndex]);
@@ -151,7 +186,7 @@ function generateForecastLabels(lastLabel) {
     const startYear = parseInt(yearStr);
     
     return Array.from({length: 12}, (_, i) => {
-        const date = new Date(startYear, startMonth + i, 1); // Corregido el índice
+        const date = new Date(startYear, startMonth + i, 1);
         return `${months[date.getMonth()]} ${date.getFullYear()}`;
     });
 }
@@ -211,18 +246,10 @@ function createContinuousTraces(name, historicalData, forecastData, color, label
 // Función para crear gráficos
 function createChart(containerId, labels, historicalData, forecastData, regions, colors) {
     const forecastLabels = generateForecastLabels(labels.slice(-1)[0]);
-    const fullLabels = [...labels, ...forecastLabels];
-
     const traces = regions.flatMap((region, i) => {
         const historicalValues = historicalData[region];
         const forecastValues = forecastData[region];
-        
-        // Obtener el último valor histórico para conectar con el pronóstico
         const lastHistoricalValue = historicalValues[historicalValues.length - 1];
-
-                // Suavizar transición entre último dato real y primer pronóstico
-                const transitionValue = (historicalValues[historicalValues.length - 1] + forecastValues[0]) / 2;
-        
         return [
             {
                 name: region,
@@ -256,6 +283,39 @@ function createChart(containerId, labels, historicalData, forecastData, regions,
         showlegend: true
     };
 
+    Plotly.newPlot(containerId, traces, layout);
+}
+
+function createMonthlyChart(containerId, labels, historicalData, regions, colors, monthIndex) {
+    // Se obtiene la etiqueta del mes seleccionado
+    const selectedLabel = labels[monthIndex];
+    
+    // Crear trazas usando los datos diarios almacenados en window.allData
+    const traces = regions.map((region, i) => {
+        // Se asume que en el JSON, los datos diarios están en la clave "Diario <region>"
+        const dailyKey = "Diario " + region;
+        const dailyData = window.allData[dailyKey] ? window.allData[dailyKey][selectedLabel] : [];
+        
+        // Generar etiquetas para cada día (1, 2, 3, ... según la longitud del array)
+        const days = dailyData.map((_, j) => j + 1);
+        
+        return {
+            name: region,
+            x: days,
+            y: dailyData,
+            mode: 'lines+markers',
+            line: { color: colors[i], width: 2 },
+            marker: { size: 6 }
+        };
+    });
+    
+    const layout = {
+        title: `Demanda diaria para ${selectedLabel}`,
+        xaxis: { title: 'Día del mes' },
+        yaxis: { title: 'MW/h' },
+        showlegend: true
+    };
+    
     Plotly.newPlot(containerId, traces, layout);
 }
 
