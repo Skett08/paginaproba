@@ -1,0 +1,103 @@
+/* Estilos generales para la página */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+/* Contenedor principal centrado */
+.container {
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 50px;
+}
+
+/* Contenedor de botones centrados */
+.botones-centrados {
+  margin-bottom: 30px;
+}
+
+/* Estilo para el botón principal (Proyecto 1) */
+#btnProyecto1 {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  padding: 15px 30px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#btnProyecto1:hover {
+  background-color: #0056b3;
+}
+
+/* Contenedor para los sub-botones, oculto por defecto */
+.sub-botones {
+  display: none;
+  margin-top: 10px;
+}
+
+/* Estilos para los botones de Proyecto 2 y Proyecto 3 */
+.sub-botones button {
+  background-color: #28a745;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sub-botones button:hover {
+  background-color: #218838;
+}
+
+/* Estilos para el contenido desplegado */
+#contenido {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: left;
+  margin-top: 20px;
+}
+
+/* Estilos específicos para el contenido del archivo Word */
+.word-content {
+  text-align: center;
+}
+
+/* Reducción y centrado de imágenes dentro del contenido Word */
+.word-content img {
+  display: block;
+  margin: 0 auto;
+  max-width: 80%;
+  height: auto;
+}
+
+/* Estilos para el botón Regresar con forma azulado y fijo arriba a la izquierda */
+#regresar {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  z-index: 1000;
+}
+
+#regresar:hover {
+  background: linear-gradient(135deg, #0056b3, #003f80);
+}

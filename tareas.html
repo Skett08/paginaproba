@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proyectos - FIEX</title>
+  <!-- Se enlaza la hoja de estilos específica para la página -->
+  <link rel="stylesheet" href="styletareas.css">
+  <!-- Se incluye Plotly.js para la generación de gráficas -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- Se incluye Mammoth.js para convertir DOCX a HTML -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+</head>
+<body>
+  <!-- Botón Regresar fijo en la esquina superior izquierda -->
+  <button id="regresar" onclick="window.location.href='index.html'">Regresar</button>
+  
+  <div class="container">
+    <!-- Botón principal que despliega los sub-botones -->
+    <div class="botones-centrados">
+      <button id="btnProyecto1" onclick="toggleSubProyectos()">Proyecto 1: Dimensionamiento de un Sistema Solar para una Vivienda</button>
+      <!-- Contenedor oculto inicialmente con los sub-botones para el Proyecto 1 -->
+      <div id="subProyectos" class="sub-botones" style="display: none;">
+        <!-- Botón para mostrar el contenido del Proyecto 1 (documento DOCX) -->
+        <button id="btnSubProj1" onclick="mostrarChrisProbaProyecto1()">Christian Jesús Vargas Sánchez</button>
+        <!-- Botón para mostrar el contenido del Proyecto 2 -->
+        <button id="btnSubProj2" onclick="mostrarProyecto2()">Proyecto 2</button>
+      </div>
+    </div>
+    
+    <!-- Contenedor donde se desplegará el contenido del proyecto seleccionado -->
+    <div id="contenido">
+      <h1>Bienvenido</h1>
+      <p>Seleccione un proyecto para ver su contenido.</p>
+    </div>
+  </div>
+  
+  <!-- Se enlaza el archivo JavaScript para la lógica de la página -->
+  <script src="scripttareas.js"></script>
+</body>
+</html>
