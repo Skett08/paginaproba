@@ -16,15 +16,30 @@
   <button id="regresar" onclick="window.location.href='index.html'">Regresar</button>
   
   <div class="container">
-    <!-- Botón principal que despliega los sub-botones -->
-    <div class="botones-centrados">
-      <button id="btnProyecto1" onclick="toggleSubProyectos()">Proyecto 1: Dimensionamiento de un Sistema Solar para una Vivienda</button>
-      <!-- Contenedor oculto inicialmente con los sub-botones para el Proyecto 1 -->
-      <div id="subProyectos" class="sub-botones" style="display: none;">
-        <!-- Botón para mostrar el contenido del Proyecto 1 (documento DOCX) -->
-        <button id="btnSubProj1" onclick="mostrarChrisProbaProyecto1()">Christian Jesús Vargas Sánchez</button>
-        <!-- Botón para mostrar el contenido del Proyecto 2 -->
-        <button id="btnSubProj2" onclick="mostrarProyecto2()">Juan Uriel Belmontes Campuzano</button>
+    <!-- Contenedor de botones principales con Flexbox -->
+    <div class="botones-principales">
+      <!-- Botón Proyecto 1 -->
+      <div class="boton-principal">
+        <button id="btnProyecto1" onclick="toggleSubProyectos()">Proyecto 1: Dimensionamiento de un Sistema Solar para una Vivienda</button>
+        <!-- Contenedor oculto inicialmente con los sub-botones para el Proyecto 1 -->
+        <div id="subProyectos" class="sub-botones" style="display: none;">
+          <!-- Botón para mostrar el contenido del Proyecto 1 (documento DOCX) -->
+          <button id="btnSubProj1" onclick="mostrarChrisProbaProyecto1()">Christian Jesús Vargas Sánchez</button>
+          <!-- Botón para mostrar el contenido del Proyecto 2 -->
+          <button id="btnSubProj2" onclick="mostrarProyecto2()">Juan Uriel Belmontes Campuzano</button>
+        </div>
+      </div>
+      
+      <!-- Nuevo botón Juegos de Azar -->
+      <div class="boton-principal">
+        <button id="btnJuegosAzar" onclick="toggleJuegosAzar()" style="background-color: #007bff;border: none;color: #fff;padding: 15px 30px;margin: 10px;font-size: 16px;border-radius: 5px;cursor: pointer;transition: background-color 0.3s;">Juegos de Azar</button>
+        <!-- Contenedor oculto inicialmente con los sub-botones para Juegos de Azar -->
+        <div id="subJuegosAzar" class="sub-botones" style="display: none;">
+          <!-- Botón para mostrar el contenido del Juego de Azar 1 -->
+          <button id="btnSubJuego1" onclick="mostrarJuego1()">Christian Jesús Vargas Sánchez</button>
+          <!-- Botón para mostrar el contenido del Juego de Azar 2 -->
+          <button id="btnSubJuego2" onclick="mostrarJuego2()">Juan Uriel Belmontes Campuzano</button>
+        </div>
       </div>
     </div>
     
@@ -32,11 +47,85 @@
     <div id="contenido">
       <h1>Bienvenido</h1>
       <p>Seleccione un proyecto para ver su contenido.</p>
-      <p>El botón azul es el tema en cuestión, presionarlo desplegará otros botones que serán los proyectos individuales de cada miembro del equipo.</p>
     </div>
   </div>
   
   <!-- Se enlaza el archivo JavaScript para la lógica de la página -->
   <script src="scripttareas.js"></script>
+  <script>
+    // Función para alternar la visualización de los subproyectos
+    function toggleSubProyectos() {
+      var subProyectos = document.getElementById("subProyectos");
+      var subJuegosAzar = document.getElementById("subJuegosAzar");
+      
+      if (subProyectos.style.display === "none" || subProyectos.style.display === "") {
+        subProyectos.style.display = "block";
+        subJuegosAzar.style.display = "none"; // Oculta los subbotones de Juegos de Azar
+      } else {
+        subProyectos.style.display = "none";
+      }
+    }
+    
+    // Nueva función para alternar la visualización de los juegos de azar
+    function toggleJuegosAzar() {
+      var subJuegosAzar = document.getElementById("subJuegosAzar");
+      var subProyectos = document.getElementById("subProyectos");
+      
+      if (subJuegosAzar.style.display === "none" || subJuegosAzar.style.display === "") {
+        subJuegosAzar.style.display = "block";
+        subProyectos.style.display = "none"; // Oculta los subbotones de Proyecto 1
+      } else {
+        subJuegosAzar.style.display = "none";
+      }
+    }
+    
+    // Función para mostrar el contenido del Proyecto 1 de Christian
+    function mostrarChrisProbaProyecto1() {
+      fetch('ChrisProbaProyecto1.docx')
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => mammoth.convertToHtml({ arrayBuffer: arrayBuffer }))
+        .then(result => {
+          document.getElementById('contenido').innerHTML = `
+            <h1>Proyecto 1 - Christian Jesús Vargas Sánchez</h1>
+            <div class="word-content">
+              ${result.value}
+            </div>
+          `;
+        })
+        .catch(err => {
+          console.error("Error al cargar el archivo de Word:", err);
+          document.getElementById('contenido').innerHTML = '<p>Error al cargar el contenido del archivo.</p>';
+        });
+    }
+    
+    // Función para mostrar el contenido del Proyecto 1 de Juan
+    function mostrarProyecto2() {
+      fetch('JuanProbaProyecto1.docx')
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => mammoth.convertToHtml({ arrayBuffer: arrayBuffer }))
+        .then(result => {
+          document.getElementById('contenido').innerHTML = `
+            <h1>Proyecto 1 - Juan Uriel Belmontes Campuzano</h1>
+            <div class="word-content">
+              ${result.value}
+            </div>
+          `;
+        })
+        .catch(err => {
+          console.error("Error al cargar el archivo de Word:", err);
+          document.getElementById('contenido').innerHTML = '<p>Error al cargar el contenido del archivo.</p>';
+        });
+    }
+    
+    // Nuevas funciones para mostrar los juegos de azar
+    function mostrarJuego1() {
+      document.getElementById("contenido").innerHTML = "<h1>Juegos de Azar - Christian Jesús Vargas Sánchez</h1><p>Contenido del juego de azar 1.</p>";
+    }
+    
+    // Modificada para redirigir a JuegoPelota.html
+    function mostrarJuego2() {
+      window.location.href = 'JuegoPelota.html';
+    }
+  </script>
 </body>
 </html>
