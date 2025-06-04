@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
 body {
     font-family: Arial, sans-serif;
     background-color: #99b4ff;
@@ -20,6 +22,54 @@ body {
     width: 100%;
     max-width: 1200px;
     min-height: 80vh;
+}
+
+h1 {
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 32px; /* Tamaño más grande */
+    font-weight: 700;
+    color: transparent;
+    background: linear-gradient(120deg, #1a237e, #4b73ec); /* Gradiente de colores */
+    -webkit-background-clip: text; /* Texto con gradiente */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    letter-spacing: 1px; /* Espaciado entre letras */
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    animation: glow 2s ease-in-out infinite alternate; /* Efecto de brillo */
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #4b73ec, 0 0 20px #4b73ec;
+    }
+    to {
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #4b73ec, 0 0 40px #4b73ec;
+    }
+}
+
+h1::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(90deg, #4b73ec, #0056b3); /* Gradiente en la línea inferior */
+    border-radius: 1.5px;
+}
+
+/* Estilo para el subtítulo */
+p {
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 30px;
+    padding: 0 10px;
 }
 
 /* Estilo para el campo de entrada */
@@ -276,4 +326,44 @@ button:active {
     display: block;
     content: "";
     margin: 5px 0;
+}
+
+.boton-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+ gap   : 15px;
+    margin: 20px auto;
+    max-width: 1200px;
+}
+
+.btn {
+    background: linear-gradient(135deg, #4b73ec, #4b73ec);
+    color: #ffffff;
+    font-size: 20px; /* Tamaño del texto */
+    font-weight: bold;
+    padding: 15px 25px; /* Espacio interno */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(28, 167, 49, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    height: 70px; /* Altura fija para uniformidad */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #0056b3, #003f80);
+    transform: translateY(-5px); /* Sutil elevación al pasar el mouse */
+    box-shadow: 0px 6px 15px rgba(0, 123, 255, 0.6);
+}
+
+@media (max-width: 768px) {
+    .boton-container {
+        grid-template-columns: 1fr; /* 1 columna en móviles */
+    }
 }
