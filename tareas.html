@@ -29,18 +29,6 @@
           <button id="btnSubProj2" onclick="mostrarProyecto2()">Juan Uriel Belmontes Campuzano</button>
         </div>
       </div>
-      
-      <!-- Nuevo botón Juegos de Azar -->
-      <div class="boton-principal">
-        <button id="btnJuegosAzar" onclick="toggleJuegosAzar()" style="background-color: #007bff;border: none;color: #fff;padding: 15px 30px;margin: 10px;font-size: 16px;border-radius: 5px;cursor: pointer;transition: background-color 0.3s;">Juegos de Azar</button>
-        <!-- Contenedor oculto inicialmente con los sub-botones para Juegos de Azar -->
-        <div id="subJuegosAzar" class="sub-botones" style="display: none;">
-          <!-- Botón para mostrar el contenido del Juego de Azar 1 -->
-          <button id="btnSubJuego1" onclick="mostrarJuego1()">Christian Jesús Vargas Sánchez</button>
-          <!-- Botón para mostrar el contenido del Juego de Azar 2 -->
-          <button id="btnSubJuego2" onclick="mostrarJuego2()">Juan Uriel Belmontes Campuzano</button>
-        </div>
-      </div>
     </div>
     
     <!-- Contenedor donde se desplegará el contenido del proyecto seleccionado -->
@@ -56,26 +44,11 @@
     // Función para alternar la visualización de los subproyectos
     function toggleSubProyectos() {
       var subProyectos = document.getElementById("subProyectos");
-      var subJuegosAzar = document.getElementById("subJuegosAzar");
       
       if (subProyectos.style.display === "none" || subProyectos.style.display === "") {
         subProyectos.style.display = "block";
-        subJuegosAzar.style.display = "none"; // Oculta los subbotones de Juegos de Azar
       } else {
         subProyectos.style.display = "none";
-      }
-    }
-    
-    // Nueva función para alternar la visualización de los juegos de azar
-    function toggleJuegosAzar() {
-      var subJuegosAzar = document.getElementById("subJuegosAzar");
-      var subProyectos = document.getElementById("subProyectos");
-      
-      if (subJuegosAzar.style.display === "none" || subJuegosAzar.style.display === "") {
-        subJuegosAzar.style.display = "block";
-        subProyectos.style.display = "none"; // Oculta los subbotones de Proyecto 1
-      } else {
-        subJuegosAzar.style.display = "none";
       }
     }
     
@@ -115,16 +88,6 @@
           console.error("Error al cargar el archivo de Word:", err);
           document.getElementById('contenido').innerHTML = '<p>Error al cargar el contenido del archivo.</p>';
         });
-    }
-    
-    // Nuevas funciones para mostrar los juegos de azar
-    function mostrarJuego1() {
-      document.getElementById("contenido").innerHTML = "<h1>Juegos de Azar - Christian Jesús Vargas Sánchez</h1><p>Contenido del juego de azar 1.</p>";
-    }
-    
-    // Modificada para redirigir a JuegoPelotaJuan.html
-    function mostrarJuego2() {
-      window.location.href = 'JuegoPelotaJuan.html';
     }
   </script>
 </body>
