@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Azar con Dados</title>
+    <link rel="stylesheet" href="JuegoDadosChris.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Lanzar Dados</h1>
+
+        <!-- URNA CON DADOS (PELLOTAS) DEL 1 AL 6 -->
+        <div class="urna-container" id="urna">
+            <div class="pelota" style="grid-row: 1; grid-column: 1;" data-num="1">1</div>
+            <div class="pelota" style="grid-row: 1; grid-column: 2;" data-num="2">2</div>
+            <div class="pelota" style="grid-row: 1; grid-column: 3;" data-num="3">3</div>
+            <div class="pelota" style="grid-row: 2; grid-column: 1;" data-num="4">4</div>
+            <div class="pelota" style="grid-row: 2; grid-column: 2;" data-num="5">5</div>
+            <div class="pelota" style="grid-row: 2; grid-column: 3;" data-num="6">6</div>
+        </div>
+
+        <div class="actions-section">
+            <button id="extract-btn">Empezar</button>
+        </div>
+
+        <!-- DISTRIBUCIÓN TEÓRICA -->
+        <div class="teoria-section">
+            <h2>Distribución Teórica</h2>
+            <table class="table-container">
+                <thead>
+                    <tr>
+                        <th>Suma (Z)</th>
+                        <th>Probabilidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>2</td><td>2.8%</td></tr>
+                    <tr><td>3</td><td>5.6%</td></tr>
+                    <tr><td>4</td><td>8.3%</td></tr>
+                    <tr><td>5</td><td>11.1%</td></tr>
+                    <tr><td>6</td><td>13.9%</td></tr>
+                    <tr><td>7</td><td>16.7%</td></tr>
+                    <tr><td>8</td><td>13.9%</td></tr>
+                    <tr><td>9</td><td>11.1%</td></tr>
+                    <tr><td>10</td><td>8.3%</td></tr>
+                    <tr><td>11</td><td>5.6%</td></tr>
+                    <tr><td>12</td><td>2.8%</td></tr>
+                </tbody>
+            </table>
+
+            <div id="experimental-probabilities" class="experimental-probabilities" style="display: none;">
+                <h3>Distribución Experimental</h3>
+                <table class="table-container" id="experimental-table">
+                    <thead>
+                        <tr>
+                            <th>Suma (Z)</th>
+                            <th>Probabilidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="experimental-body">
+                        <!-- Filas generadas con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RESULTADO DE EXTRACCIÓN -->
+        <div class="resultado-section" id="resultado-section">
+            <h2>Resultado</h2>
+            <div id="extracted-balls" class="extracted-balls"></div>
+        </div>
+
+        <!-- GRÁFICO -->
+        <div class="graph-container" id="result-graph" style="display: none;">
+            <div id="probability-graph"></div>
+        </div>
+    </div>
+
+    <script src="JuegoDadosChris.js"></script>
+</body>
+</html>
