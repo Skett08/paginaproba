@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de la Moneda - Distribución de Bernoulli</title>
+    <link rel="stylesheet" href="stylejuegos.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Juego de la Moneda</h1>
+        
+        <div class="moneda-container">
+    <div id="moneda" class="moneda">
+        <div class="cara">Cara</div>
+        <div class="cruz">Cruz</div>
+    </div>
+</div>
+        
+       <div class="actions-section">
+    <button id="flip-btn">Lanzar Moneda</button>
+    <button id="random-btn">Generar 100 Números Aleatorios</button>
+    <button id="stats-btn">Ver Estadísticas</button>
+    <button id="reset-btn">Reiniciar</button>
+</div>
+        
+        <div class="resultado-section" id="resultado-section">
+            <h2>Resultado</h2>
+            <div id="resultado"></div>
+        </div>
+        
+        <div class="teoria-section">
+            <h2>Distribución Teórica</h2>
+            <table class="table-container">
+                <thead>
+                    <tr>
+                        <th>Resultado</th>
+                        <th>Probabilidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cara</td>
+                        <td>50%</td>
+                    </tr>
+                    <tr>
+                        <td>Cruz</td>
+                        <td>50%</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div id="experimental-probabilities" class="experimental-probabilities" style="display: none;">
+                <h3>Distribución Experimental</h3>
+                <table class="table-container" id="experimental-table">
+                    <thead>
+                        <tr>
+                            <th>Resultado</th>
+                            <th>Frecuencia</th>
+                            <th>Probabilidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="experimental-body">
+                        <!-- Filas se agregarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="graph-container" id="result-graph">
+            <div id="probability-graph"></div>
+        </div>
+    </div>
+
+    <script src="scriptjuegomoneda.js"></script>
+</body>
+</html>
