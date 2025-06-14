@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribuciones Discretas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f3460, #1a1a2e, #16213e);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #4e54c8, #8f94fb, #4e54c8);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #0f3460;
+            margin-bottom: 25px;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2, h3 {
+            color: #0f3460;
+            margin: 20px 0 15px;
+            border-bottom: 2px solid #4e54c8;
+            padding-bottom: 8px;
+        }
+        
+        .info-box {
+            background: linear-gradient(to right, #e9f7ff, #ffffff);
+            border-left: 5px solid #0f3460;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .boton-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #0f3460, #4e54c8);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 220px;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, #4e54c8, #0f3460);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn i {
+            font-size: 1.2rem;
+        }
+        
+        #random-btn {
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+        }
+        
+        #stats-btn {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+        }
+        
+        #reset-btn {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+        }
+        
+        #resultado-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .tabla th {
+            background: linear-gradient(135deg, #0f3460, #4e54c8);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .tabla td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        
+        .tabla tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .tabla tr:hover {
+            background-color: #e9ecef;
+        }
+        
+        .dist-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .dist-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+            min-width: 280px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .dist-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .dist-card h4 {
+            color: #0f3460;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .dist-card ul {
+            padding-left: 20px;
+        }
+        
+        .dist-card li {
+            margin-bottom: 8px;
+        }
+        
+        .bernoulli { border-top: 4px solid #4e54c8; }
+        .binomial { border-top: 4px solid #8f94fb; }
+        .binomial-neg { border-top: 4px solid #00b09b; }
+        .gamma { border-top: 4px solid #96c93d; }
+        .poisson { border-top: 4px solid #f953c6; }
+        .geometrica { border-top: 4px solid #8e2de2; }
+        .hipergeometrica { border-top: 4px solid #ff8a00; }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .dist-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .boton-container {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .dist-info {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-calculator"></i> Distribuciones Discretas</h1>
+        
+        <div class="info-box">
+            <p>Seleccione una distribución discreta y luego haga clic en "Generar números" para crear una muestra de 100 valores aleatorios. Las distribuciones discretas modelan fenómenos donde los resultados son valores enteros específicos.</p>
+        </div>
+        
+        <div class="dist-info">
+            <div class="dist-card bernoulli">
+                <h4><i class="fas fa-dice-one dist-icon"></i> Bernoulli</h4>
+                <p>Distribución para experimentos con dos resultados posibles (éxito/fracaso).</p>
+                <ul>
+                    <li><strong>Parámetro:</strong> p (probabilidad de éxito)</li>
+                    <li><strong>Media:</strong> p</li>
+                    <li><strong>Varianza:</strong> p(1-p)</li>
+                </ul>
+            </div>
+            
+            <div class="dist-card binomial">
+                <h4><i class="fas fa-dice dist-icon"></i> Binomial</h4>
+                <p>Número de éxitos en n ensayos independientes de Bernoulli.</p>
+                <ul>
+                    <li><strong>Parámetros:</strong> n (ensayos), p (prob. éxito)</li>
+                    <li><strong>Media:</strong> np</li>
+                    <li><strong>Varianza:</strong> np(1-p)</li>
+                </ul>
+            </div>
+            
+            <div class="dist-card binomial-neg">
+                <h4><i class="fas fa-redo-alt dist-icon"></i> Binomial Negativa</h4>
+                <p>Número de ensayos necesarios para obtener r éxitos.</p>
+                <ul>
+                    <li><strong>Parámetros:</strong> r (éxitos), p (prob. éxito)</li>
+                    <li><strong>Media:</strong> r/p</li>
+                    <li><strong>Varianza:</strong> r(1-p)/p²</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="dist-info">
+            <div class="dist-card gamma">
+                <h4><i class="fas fa-chart-line dist-icon"></i> Gamma</h4>
+                <p>Modela tiempo hasta que ocurren α eventos en proceso Poisson.</p>
+                <ul>
+                    <li><strong>Parámetros:</strong> α (forma), β (tasa)</li>
+                    <li><strong>Media:</strong> α/β</li>
+                    <li><strong>Varianza:</strong> α/β²</li>
+                </ul>
+            </div>
+            
+            <div class="dist-card poisson">
+                <h4><i class="fas fa-bell dist-icon"></i> Poisson</h4>
+                <p>Modela número de eventos en intervalo fijo de tiempo/espacio.</p>
+                <ul>
+                    <li><strong>Parámetro:</strong> λ (tasa de ocurrencia)</li>
+                    <li><strong>Media:</strong> λ</li>
+                    <li><strong>Varianza:</strong> λ</li>
+                </ul>
+            </div>
+            
+            <div class="dist-card geometrica">
+                <h4><i class="fas fa-hourglass-half dist-icon"></i> Geométrica</h4>
+                <p>Número de ensayos hasta el primer éxito en secuencia Bernoulli.</p>
+                <ul>
+                    <li><strong>Parámetro:</strong> p (prob. éxito)</li>
+                    <li><strong>Media:</strong> 1/p</li>
+                    <li><strong>Varianza:</strong> (1-p)/p²</li>
+                </ul>
+            </div>
+            
+            <div class="dist-card hipergeometrica">
+                <h4><i class="fas fa-cubes dist-icon"></i> Hipergeométrica</h4>
+                <p>Éxitos al muestrear sin reemplazo de población finita.</p>
+                <ul>
+                    <li><strong>Parámetros:</strong> N (población), K (éxitos), n (muestra)</li>
+                    <li><strong>Media:</strong> n(K/N)</li>
+                    <li><strong>Varianza:</strong> n(K/N)((N-K)/N)((N-n)/(N-1))</li>
+                </ul>
+            </div>
+        </div>
+        
+        <p>Seleccione una distribución:</p>
+        <div class="boton-container">
+            <button class="btn" onclick="generarBernoulli()">
+                <i class="fas fa-dice-one"></i> Bernoulli
+            </button>
+            <button class="btn" onclick="generarBinomial()">
+                <i class="fas fa-dice"></i> Binomial
+            </button>
+            <button class="btn" onclick="generarBinomialNegativa()">
+                <i class="fas fa-redo-alt"></i> Binomial Negativa
+            </button>
+            <button class="btn" onclick="generarGamma()">
+                <i class="fas fa-chart-line"></i> Gamma
+            </button>
+        </div>
+        
+        <div class="boton-container">
+            <button class="btn" onclick="generarPoisson()">
+                <i class="fas fa-bell"></i> Poisson
+            </button>
+            <button class="btn" onclick="generarGeometrica()">
+                <i class="fas fa-hourglass-half"></i> Geométrica
+            </button>
+            <button class="btn" onclick="generarHipergeometrica()">
+                <i class="fas fa-cubes"></i> Hipergeométrica
+            </button>
+        </div>
+
+        <div class="boton-container">
+            <button id="random-btn" class="btn">
+                <i class="fas fa-random"></i> Generar números aleatorios
+            </button>
+            <button id="stats-btn" class="btn">
+                <i class="fas fa-chart-pie"></i> Ver estadísticas
+            </button>
+            <button id="reset-btn" class="btn">
+                <i class="fas fa-redo"></i> Reiniciar
+            </button>
+        </div>
+
+        <div id="resultado-section" style="display: none; margin-top: 20px;">
+            <h2><i class="fas fa-list-ol"></i> <span id="resultado">Resultado:</span></h2>
+        </div>
+
+<div id="experimental-probabilities" style="display: none; margin-top: 30px;">
+    <h3><i class="fas fa-table"></i> Tabla de Frecuencias</h3>
+    <div style="overflow-x: auto;">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>Valor/Intervalo</th>
+                    <th>Frecuencia</th>
+                    <th>Prob. Experimental (%)</th>
+                    <th>Prob. Teórica (%)</th>
+                    <th>Error (%)</th>
+                </tr>
+            </thead>
+            <tbody id="experimental-body"></tbody>
+        </table>
+    </div>
+</div>
+
+        <div id="result-graph" style="display: none; margin-top: 30px;">
+            <h3><i class="fas fa-chart-bar"></i> Gráfica de la distribución</h3>
+            <div id="probability-graph"></div>
+        </div>
+
+    <script src="distribucionesdiscretas.js"></script>
+</body>
+</html>

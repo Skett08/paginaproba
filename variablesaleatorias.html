@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variables Aleatorias Continuas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #ff8a00, #e52e71, #1a2a6c);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a2a6c;
+            margin-bottom: 25px;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2, h3 {
+            color: #1a2a6c;
+            margin: 20px 0 15px;
+            border-bottom: 2px solid #e52e71;
+            padding-bottom: 8px;
+        }
+        
+        .info-box {
+            background: linear-gradient(to right, #e9f7ff, #ffffff);
+            border-left: 5px solid #1a2a6c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .boton-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #1a2a6c, #4a3f8f);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, #4a3f8f, #1a2a6c);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn i {
+            font-size: 1.2rem;
+        }
+        
+        #random-btn {
+            background: linear-gradient(135deg, #e52e71, #ff8a00);
+        }
+        
+        #stats-btn {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+        }
+        
+        #reset-btn {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+        }
+        
+        #resultado-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .tabla th {
+            background: linear-gradient(135deg, #1a2a6c, #4a3f8f);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .tabla td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .tabla tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .tabla tr:hover {
+            background-color: #e9ecef;
+        }
+        
+        .dist-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .dist-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+            min-width: 250px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .dist-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .dist-card h4 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dist-card ul {
+            padding-left: 20px;
+        }
+        
+        .dist-card li {
+            margin-bottom: 8px;
+        }
+        
+        .uniforme { border-top: 4px solid #4a3f8f; }
+        .gaussiana { border-top: 4px solid #e52e71; }
+        .exponencial { border-top: 4px solid #ff8a00; }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .boton-container {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .dist-info {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-chart-line"></i> Variables Aleatorias Continuas</h1>
+        
+        <div class="info-box">
+            <p>Seleccione una distribución continua y luego haga clic en "Generar números" para crear una muestra de 100 valores aleatorios.</p>
+        </div>
+        
+        <div class="dist-info">
+            <div class="dist-card uniforme">
+                <h4><i class="fas fa-ruler-horizontal"></i> Uniforme</h4>
+                <p>Distribución donde todos los valores en un intervalo tienen la misma probabilidad.</p>
+                <ul>
+                    <li><strong>Parámetros:</strong> a (mínimo), b (máximo)</li>
+                    <li><strong>Media:</strong> (a + b)/2</li>
+                    <li><strong>Varianza:</strong> (b - a)²/12</li>
+                </ul>
+            </div>
+            
+            <div class="dist-card gaussiana">
+                <h4><i class="fas fa-bell"></i> Gaussiana</h4>
+                <p>Distribución en forma de campana (distribución normal).</p>
+                <ul>
+                    <li><strong>Parámetros:</strong> μ (media), σ (desviación)</li>
+                    <li><strong>Media:</strong> μ</li>
+                    <li><strong>Varianza:</strong> σ²</li>
+                </ul>
+            </div>
+            
+            <div class="dist-card exponencial">
+                <h4><i class="fas fa-chart-bar"></i> Exponencial</h4>
+                <p>Distribución que modela tiempos entre eventos en un proceso de Poisson.</p>
+                <ul>
+                    <li><strong>Parámetros:</strong> λ (tasa)</li>
+                    <li><strong>Media:</strong> 1/λ</li>
+                    <li><strong>Varianza:</strong> 1/λ²</li>
+                </ul>
+            </div>
+        </div>
+        
+        <p>Seleccione una distribución:</p>
+        <div class="boton-container">
+            <button class="btn" onclick="generarUniforme()">
+                <i class="fas fa-ruler-horizontal"></i> Distribución Uniforme
+            </button>
+            <button class="btn" onclick="generarGaussiana()">
+                <i class="fas fa-bell"></i> Distribución Gaussiana
+            </button>
+            <button class="btn" onclick="generarExponencial()">
+                <i class="fas fa-chart-bar"></i> Distribución Exponencial
+            </button>
+        </div>
+
+        <div class="boton-container">
+            <button id="random-btn" class="btn">
+                <i class="fas fa-random"></i> Generar números aleatorios
+            </button>
+            <button id="stats-btn" class="btn">
+                <i class="fas fa-chart-pie"></i> Ver estadísticas
+            </button>
+            <button id="reset-btn" class="btn">
+                <i class="fas fa-redo"></i> Reiniciar
+            </button>
+        </div>
+
+        <div id="resultado-section" style="display: none; margin-top: 20px;">
+            <h2><i class="fas fa-list-ol"></i> <span id="resultado">Resultado:</span></h2>
+        </div>
+
+<div id="experimental-probabilities" style="display: none; margin-top: 30px;">
+    <h3><i class="fas fa-table"></i> Tabla de Frecuencias</h3>
+    <div style="overflow-x: auto;">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>Valor/Intervalo</th>
+                    <th>Frecuencia</th>
+                    <th>Prob. Experimental (%)</th>
+                    <th>Prob. Teórica (%)</th>
+                    <th>Error (%)</th>
+                </tr>
+            </thead>
+            <tbody id="experimental-body"></tbody>
+        </table>
+    </div>
+</div>
+
+        <div id="result-graph" style="display: none; margin-top: 30px;">
+            <h3><i class="fas fa-chart-bar"></i> Histograma de la distribución</h3>
+            <div id="probability-graph"></div>
+        </div>
+
+    <script src="variablesaleatorias.js"></script>
+</body>
+</html>
